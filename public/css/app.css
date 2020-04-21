@@ -1,15 +1,15 @@
-/* Begin default SlimPHP 3 Skeleton MVC App styles */
-body{
-    margin:0;
-    padding:1em;
-    padding-top: 0;
-    font:14px/1.5 Helvetica,Arial,Verdana,sans-serif;
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+.icon-block {
+  padding: 0 15px;
 }
-h1{
-    margin:0;
-    font-size:48px;
-    font-weight:normal;
-    line-height:48px;
+.icon-block .material-icons {
+	font-size: inherit;
 }
-/* End default SlimPHP 3 Skeleton MVC App styles */
 

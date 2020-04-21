@@ -2,9 +2,16 @@
 <html class="no-js" lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
         <title>Server Info API</title>
-        <link rel="stylesheet" href="<?php echo s3MVC_MakeLink('/css/app.css'); ?>" />
+        
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        
+        <!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="<?php echo s3MVC_MakeLink('/materialize/css/materialize.min.css'); ?>" />
+        
+        <link type="text/css" rel="stylesheet" href="<?php echo s3MVC_MakeLink('/css/app.css'); ?>" />
     </head>
     <body>
         <div>
@@ -35,6 +42,7 @@
             </div> 
         </footer>
 
-        <script src="<?php echo s3MVC_MakeLink('/js/app.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/materialize/js/materialize.min.js'); ?>"></script>
+        <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/js/app.js'); ?>"></script>
     </body>
 </html>

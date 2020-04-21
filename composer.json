@@ -1,0 +1,16 @@
+{
+    "name": "cfsweb/linux-server-info-api",
+    "description": "Web App that emmits various server related info in json format to any web-client.",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.2.0",
+        "rotexsoft/slim3-skeleton-mvc-tools": "3.0.*"
+    },
+    "require-dev": {
+        
+    },
+    "autoload": {
+        "classmap": [ "src/", "tests/", "vendor/slim/" ]
+    }
+}

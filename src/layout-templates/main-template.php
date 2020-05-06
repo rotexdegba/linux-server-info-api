@@ -9,9 +9,9 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
         <!--Import materialize.css-->
-        <link type="text/css" rel="stylesheet" href="<?php echo s3MVC_MakeLink('/materialize/css/materialize.min.css'); ?>" media="screen,projection" />
+        <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/materialize/css/materialize.min.css'); ?>" media="screen,projection" />
 
-        <link type="text/css" rel="stylesheet" href="<?php echo s3MVC_MakeLink('/css/app.css'); ?>" media="screen,projection" />
+        <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/css/app.css'); ?>" media="screen,projection" />
     </head>
     <body>
         <nav class="light-blue lighten-1" role="navigation">
@@ -23,23 +23,29 @@
                     <!-- home link -->
                     <div class="col s6 m2">
                         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a>
-                        <a id="logo-container" href="#" class="brand-logo left">
-                            Server Info API
+                        <a id="logo-container" href="<?= s3MVC_MakeLink('/'); ?>" class="brand-logo left">
+                            <i class="large material-icons">dns</i>Server Info API
                         </a>
                     </div>
 
                     <!-- bread crumb links -->
-                    <div class="col m8 center hide-on-small-and-down">
+                    <div class="col m6 center hide-on-small-and-down">
                         <a href="#!" class="breadcrumb">First</a>
                         <a href="#!" class="breadcrumb">Second</a>
                         <a href="#!" class="breadcrumb">Third</a>
                     </div>
 
                     <!-- login / logout button -->
-                    <div class="col s6 m2">
+                    <div class="col s6 m4">
                         <ul class="right">
                             <?php if ($__is_logged_in): ?>
                                 <li>
+                                    <a  class="waves-effect waves-light btn light-blue darken-4  tooltipped"
+                                         data-position="bottom" data-tooltip="<?= $__logged_in_user_name; ?>"
+                                        href="<?= s3MVC_MakeLink("/tokens/my-tokens"); ?>"
+                                    >
+                                        <i class="material-icons right">vpn_key</i>My Tokens
+                                    </a>
                                     <a  class="waves-effect waves-light btn light-blue darken-4  tooltipped"
                                          data-position="bottom" data-tooltip="<?= $__logged_in_user_name; ?>"
                                         href="<?= s3MVC_MakeLink("/{$__controller_name_from_uri}/logout"); ?>"
@@ -81,7 +87,7 @@
           <li><a href="#!">Second Sidebar Link</a></li>
         </ul>
 
-        <div class="row">
+        <div class="row" id="main-content-div">
 
             <div class="col s12">
 
@@ -119,7 +125,7 @@
 
                         <div class="row">
                             <div class="col s12 m12">
-                                <?php echo $content; ?>
+                                <?= $content; ?>
                             </div>
                         </div>
                     </div>
@@ -184,8 +190,8 @@
             
         </footer>
 
-        <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/js/jquery-3.5.0.min.js'); ?>"></script>
-        <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/materialize/js/materialize.min.js'); ?>"></script>
-        <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/js/app.js'); ?>"></script>
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/js/jquery-3.5.0.min.js'); ?>"></script>
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/materialize/js/materialize.min.js'); ?>"></script>
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/js/app.js'); ?>"></script>
     </body>
 </html>

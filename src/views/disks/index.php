@@ -1,4 +1,4 @@
-                        <div class="row">
+                        <div class="row" id="disks-index">
                             <div class="col s12 m4">
                                 <div class="icon-block">
                                     <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>

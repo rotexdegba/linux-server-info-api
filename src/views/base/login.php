@@ -9,8 +9,6 @@
 ?>
 
 <?php if( !empty($error_message) ): ?>
-
-    <p style="background-color: orange;"></p>
     
     <div class="card-panel red darken-4 white-text">
         <?= $error_message;  ?>
@@ -50,9 +48,7 @@
 
         </form>
     </div>
-    
 
-    
 <?php else: ?>
     
     <form action="<?php echo $logout_action_path; ?>" method="post">

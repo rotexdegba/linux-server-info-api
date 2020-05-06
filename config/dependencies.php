@@ -320,3 +320,24 @@ $container['atlas'] = function ($c) {
         ...$c->get('settings')['atlas']['pdo']
     );
 };
+
+$container['atlas_info'] = function ($c) {
+    
+   $connection = \Atlas\Pdo\Connection::new(
+        ...$c->get('settings')['atlas']['pdo']
+    );
+    
+    return \Atlas\Info\Info::new($connection);
+};
+
+$container['vespula_form_obj'] = $container->factory(function () {
+    
+    //return a new instance on each access
+    return new \Vespula\Form\Form();
+});
+
+$container['sirius_validator'] = $container->factory(function () {
+    
+    //return a new instance on each access
+    return new \Sirius\Validation\Validator();
+});

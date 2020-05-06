@@ -69,4 +69,68 @@ class Utils {
 
         return $diskUsageData;
     }
+    
+    public static function psr7RequestObjToString(
+        \Psr\Http\Message\ServerRequestInterface $req, 
+        array $request_attribute_keys_to_skip=['route','routeInfo'],
+        $skip_req_attribs=false,
+        $skip_req_body=false,
+        $skip_req_cookie_params=false,
+        $skip_req_headers=false,
+        $skip_req_method=false,
+        $skip_req_proto_ver=false,
+        $skip_req_query_params=false,
+        $skip_req_target=false,
+        $skip_req_server_params=false,
+        $skip_req_uploaded_files=true,
+        $skip_req_uri=false
+    ) {
+        return s3MVC_psr7RequestObjToString(
+                    $req, 
+                    $request_attribute_keys_to_skip,
+                    $skip_req_attribs,
+                    $skip_req_body,
+                    $skip_req_cookie_params,
+                    $skip_req_headers,
+                    $skip_req_method,
+                    $skip_req_proto_ver,
+                    $skip_req_query_params,
+                    $skip_req_target,
+                    $skip_req_server_params,
+                    $skip_req_uploaded_files,
+                    $skip_req_uri
+                );
+    }
+    
+    public static function psr7UploadedFileToString(\Psr\Http\Message\UploadedFileInterface $file) {
+        
+        return s3MVC_psr7UploadedFileToString($file);
+    }
+    
+    public static function isEmptyString($string) {
+        
+        return empty($string) && mb_strlen( ''.$string, 'UTF-8') <= 0;
+    }
+    
+    public static function displayFieldErrors(string $field, array $errors): string {
+        
+        $messages = '';
+        
+        if(isset($errors[$field])) {
+            
+            foreach($errors[$field] as $error) {
+                
+                $errStr = ((string)$error);
+                $messages .= "<span class=\"helper-text red-text\">{$errStr}</span>".PHP_EOL;
+                
+            }
+        }
+        
+        return $messages;
+    }
+    
+    public static function isCountableWithData($var) {
+
+        return is_countable($var) && (count($var) > 0);
+    }
 }

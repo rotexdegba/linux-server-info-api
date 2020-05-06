@@ -40,6 +40,7 @@ class AddTokensTableToDb extends BasePhinxDbMigration
                       ->addColumn('generators_username', 'string', ['limit'=>255, 'null'=>false])
                       ->addColumn('token', 'string', ['limit'=>255, 'null'=>false])
                       ->addColumn('date_created', 'string', ['limit'=>255, 'default'=>'0000-00-00 00:00:00', 'null'=>false])
+                      ->addColumn('date_last_edited', 'string', ['limit'=>255, 'default'=>'0000-00-00 00:00:00', 'null'=>false])
                       ->addColumn('max_requests_per_day', 'biginteger', ['signed'=>false, 'default'=>0, 'null'=>false])
                       ->addColumn('expiry_date', 'string', ['limit'=>255, 'default'=>'0000-00-00 00:00:00', 'null'=>false])
                       ->addColumn('creators_ip', 'string', ['limit'=>255, 'null'=>false, 'default'=>'NOIP'])

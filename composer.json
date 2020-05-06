@@ -7,7 +7,10 @@
         "php": ">=7.2.0",
         "rotexsoft/slim3-skeleton-mvc-tools": "3.0.*",
         "aura/session": "^2.1",
-        "atlas/orm": "^3.1"
+        "atlas/orm": "^3.1",
+        "siriusphp/validation": "^3.0",
+        "vespula/form": "^1.0",
+        "rotexsoft/versatile-collections": "^3.1"
     },
     "require-dev": {
         "atlas/cli": "^2.2",

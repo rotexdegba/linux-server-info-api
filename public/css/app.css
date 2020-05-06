@@ -7,9 +7,40 @@
  */
 
 .icon-block {
-  padding: 0 15px;
+    padding: 0 15px;
 }
 .icon-block .material-icons {
-	font-size: inherit;
+    font-size: inherit;
+}
+.pad-l1{
+    padding-left: 1rem;
+}
+.pad-r1{
+    padding-left: 1rem;
+}
+.pad-l2{
+    padding-left: 2rem;
+}
+.pad-r2{
+    padding-left: 2rem;
+}
+.pad-l3{
+    padding-left: 3rem;
+}
+.pad-r3{
+    padding-left: 3rem;
 }
 
+.d-inline {
+    display: inline;
+}
+
+.d-inline-block {
+    display: inline-block;
+}
+
+@media only screen and (min-width: 993px) {
+  .container {
+    width: 90%;
+  }
+}

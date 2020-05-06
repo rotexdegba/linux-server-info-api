@@ -4,132 +4,186 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
         <title>Server Info API</title>
-        
+
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        
+
         <!--Import materialize.css-->
         <link type="text/css" rel="stylesheet" href="<?php echo s3MVC_MakeLink('/materialize/css/materialize.min.css'); ?>" media="screen,projection" />
-        
+
         <link type="text/css" rel="stylesheet" href="<?php echo s3MVC_MakeLink('/css/app.css'); ?>" media="screen,projection" />
     </head>
     <body>
+        <nav class="light-blue lighten-1" role="navigation">
+            
+            <div class="nav-wrapper pad-l1 pad-r1">
+                
+                <div class="row">
+                    
+                    <!-- home link -->
+                    <div class="col s6 m2">
+                        <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a>
+                        <a id="logo-container" href="#" class="brand-logo left">
+                            Server Info API
+                        </a>
+                    </div>
 
+                    <!-- bread crumb links -->
+                    <div class="col m8 center hide-on-small-and-down">
+                        <a href="#!" class="breadcrumb">First</a>
+                        <a href="#!" class="breadcrumb">Second</a>
+                        <a href="#!" class="breadcrumb">Third</a>
+                    </div>
+
+                    <!-- login / logout button -->
+                    <div class="col s6 m2">
+                        <ul class="right">
+                            <?php if ($__is_logged_in): ?>
+                                <li>
+                                    <a  class="waves-effect waves-light btn light-blue darken-4  tooltipped"
+                                         data-position="bottom" data-tooltip="<?= $__logged_in_user_name; ?>"
+                                        href="<?= s3MVC_MakeLink("/{$__controller_name_from_uri}/logout"); ?>"
+                                    >
+                                        <i class="material-icons right">person</i>Logout
+                                    </a>
+                                </li>
+                           <?php else: ?>
+                                <li>
+                                    <a  class="waves-effect waves-light btn light-blue darken-4"
+                                        href="<?= s3MVC_MakeLink("/{$__controller_name_from_uri}/login"); ?>"
+                                    >
+                                        <i class="material-icons right">person</i>Login 
+                                    </a>
+                                </li>
+                           <?php endif; ?> 
+                        </ul>
+                    </div>
+                    
+                </div> <!-- <div class="row"> -->
+                
+                <!-- Initial Responsive Nav system -->
+                <!--
+                    <ul class="right hide-on-med-and-down">
+                        <li><a href="#">Navbar Link</a></li>
+                    </ul>
+
+                    <ul id="nav-mobile" class="sidenav">
+                        <li><a href="#">Navbar Link</a></li>
+                    </ul>
+                    <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                -->
+            </div> <!-- <div class="nav-wrapper pad-l1 pad-r1"> -->
+            
+        </nav>
         
-        
-        
-        
-  <nav class="light-blue lighten-1" role="navigation">
-    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
-      <ul class="right hide-on-med-and-down">
-        <li><a href="#">Navbar Link</a></li>
-      </ul>
+        <ul id="slide-out" class="sidenav">
+          <li><a href="#!">First Sidebar Link</a></li>
+          <li><a href="#!">Second Sidebar Link</a></li>
+        </ul>
 
-      <ul id="nav-mobile" class="sidenav">
-        <li><a href="#">Navbar Link</a></li>
-      </ul>
-      <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-    </div>
-  </nav>
-  <div class="section no-pad-bot" id="index-banner">
-    <div class="container">
-      <br><br>
-      <h1 class="header center orange-text">Server Info API</h1>
-      
-      <div class="row center">
-        <h5 class="header col s12 light">This site is powered by the <a href="https://github.com/rotexsoft/slim3-skeleton-mvc-app">SlimPHP 3 Skeleton MVC App.</a></h5>
-      </div>
-      <div class="row center">
-        <a href="http://materializecss.com/getting-started.html" id="download-button" class="btn-large waves-effect waves-light orange">Get Started</a>
-      </div>
-      <br><br>
+        <div class="row">
 
-    </div>
-  </div>
+            <div class="col s12">
 
+                <div class="section no-pad-bot">
+                    <div class="container">
+                        
+                        <?php if( isset($__last_flash_message) && $__last_flash_message !== null ): ?>
 
-  <div class="container">
-    <div class="section">
-        
-        
-      <div class="row">
-          <div class="col s12 m12">
-              <?php echo $content; ?>
-          </div>
-      </div>
+                            <!-- Header Alert Messaging region - only show if the message variable is not empty -->
+                            <div class="card-panel rounded <?= $__last_flash_message_css_class ?>">
 
-      <!--   Icon Section   -->
-      <div class="row">
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
-            <h5 class="center">Speeds up development</h5>
+                                <div class="row">
 
-            <p class="light">We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.</p>
-          </div>
+                                    <div class="col s1">
+                                        <h1 class="d-inline">
+                                            <?= $__last_flash_message['title'] ?>
+                                        </h1>
+                                    </div>
+                                    <div class="col s11">
+                                        <p class="d-inline">
+                                            <?= $__last_flash_message['message'] ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        <?php endif; // if( isset($__last_flash_message) && $__last_flash_message !== null ): ?>
+
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="section">
+
+                        <div class="row">
+                            <div class="col s12 m12">
+                                <?php echo $content; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <br><br>
+                </div>
+            </div>
         </div>
 
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
-            <h5 class="center">User Experience Focused</h5>
+        <footer class="page-footer orange">
+            
+            <div class="container">
+                <div class="row">
+<!--                    <div class="col l6 s12">
+                        <h5 class="white-text">Company Bio</h5>
+                        <p class="grey-text text-lighten-4">
+                            We are a team of college students working on this 
+                            project like it's our full time job. Any amount would 
+                            help support and continue development on this project 
+                            and is greatly appreciated.
+                        </p>
+                    </div>
+                    <div class="col l3 s12">
+                        <h5 class="white-text">Settings</h5>
+                        <ul>
+                            <li><a class="white-text" href="#!">Link 1</a></li>
+                            <li><a class="white-text" href="#!">Link 2</a></li>
+                            <li><a class="white-text" href="#!">Link 3</a></li>
+                            <li><a class="white-text" href="#!">Link 4</a></li>
+                        </ul>
+                    </div>
+                    <div class="col l3 s12">
+                        <h5 class="white-text">Connect</h5>
+                        <ul>
+                            <li><a class="white-text" href="#!">Link 1</a></li>
+                            <li><a class="white-text" href="#!">Link 2</a></li>
+                            <li><a class="white-text" href="#!">Link 3</a></li>
+                            <li><a class="white-text" href="#!">Link 4</a></li>
+                        </ul>
+                    </div>-->
+                </div>
+            </div>
+            
+            <div class="footer-copyright orange accent-4" style="padding-bottom: 0;">
+                <div class="container">
 
-            <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
-          </div>
-        </div>
+                    <div class="row">
+                        <div class="col s3">
+                            <p>
+                                &copy; Copyright <?= date('Y'); ?>
+                            </p>
+                        </div>
+                        <div class="col s9 right-align">
+                            <p>
+                                Powered by the <a target="_blank" class="blue-text text-darken-3" href="https://github.com/rotexsoft/slim3-skeleton-mvc-app">SlimPHP 3 Skeleton MVC App framework</a>
+                                and UI goodness from <a target="_blank" class="blue-text text-darken-3" href="https://materializecss.com/">Materializecss</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </footer>
 
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
-            <h5 class="center">Easy to work with</h5>
-
-            <p class="light">We have provided detailed documentation as well as specific code examples to help new users get started. We are also always open to feedback and can answer any questions a user may have about Materialize.</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <br><br>
-  </div>
-
-  <footer class="page-footer orange">
-    <div class="container">
-      <div class="row">
-        <div class="col l6 s12">
-          <h5 class="white-text">Company Bio</h5>
-          <p class="grey-text text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
-
-
-        </div>
-        <div class="col l3 s12">
-          <h5 class="white-text">Settings</h5>
-          <ul>
-            <li><a class="white-text" href="#!">Link 1</a></li>
-            <li><a class="white-text" href="#!">Link 2</a></li>
-            <li><a class="white-text" href="#!">Link 3</a></li>
-            <li><a class="white-text" href="#!">Link 4</a></li>
-          </ul>
-        </div>
-        <div class="col l3 s12">
-          <h5 class="white-text">Connect</h5>
-          <ul>
-            <li><a class="white-text" href="#!">Link 1</a></li>
-            <li><a class="white-text" href="#!">Link 2</a></li>
-            <li><a class="white-text" href="#!">Link 3</a></li>
-            <li><a class="white-text" href="#!">Link 4</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="footer-copyright">
-      <div class="container">
-      <p> &copy; Copyright <?= date('Y'); ?>.</p>
-      </div>
-    </div>
-  </footer>
-        
-        
-        
         <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/js/jquery-3.5.0.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/materialize/js/materialize.min.js'); ?>"></script>
         <script type="text/javascript" src="<?php echo s3MVC_MakeLink('/js/app.js'); ?>"></script>

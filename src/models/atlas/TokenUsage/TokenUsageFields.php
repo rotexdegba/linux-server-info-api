@@ -13,6 +13,7 @@ namespace Lsia\Atlas\Models\TokenUsage;
  * @property mixed $date_time_of_request VARCHAR(255) NOT NULL
  * @property mixed $request_full_details TEXT NOT NULL
  * @property mixed $requesters_ip VARCHAR(255) NOT NULL
+ * @property null|false|\Lsia\Atlas\Models\Token\TokenRecord $token
  */
 trait TokenUsageFields
 {

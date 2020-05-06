@@ -11,9 +11,11 @@ namespace Lsia\Atlas\Models\Token;
  * @property mixed $generators_username VARCHAR(255) NOT NULL
  * @property mixed $token VARCHAR(255) NOT NULL
  * @property mixed $date_created VARCHAR(255) NOT NULL
+ * @property mixed $date_last_edited VARCHAR(255) NOT NULL
  * @property mixed $max_requests_per_day BIGINTEGER NOT NULL
  * @property mixed $expiry_date VARCHAR(255) NOT NULL
  * @property mixed $creators_ip VARCHAR(255) NOT NULL
+ * @property null|\Lsia\Atlas\Models\TokenUsage\TokenUsageRecordSet $usages
  */
 trait TokenFields
 {

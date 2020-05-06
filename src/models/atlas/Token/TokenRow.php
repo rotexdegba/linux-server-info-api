@@ -13,6 +13,7 @@ use Atlas\Table\Row;
  * @property mixed $generators_username VARCHAR(255) NOT NULL
  * @property mixed $token VARCHAR(255) NOT NULL
  * @property mixed $date_created VARCHAR(255) NOT NULL
+ * @property mixed $date_last_edited VARCHAR(255) NOT NULL
  * @property mixed $max_requests_per_day BIGINTEGER NOT NULL
  * @property mixed $expiry_date VARCHAR(255) NOT NULL
  * @property mixed $creators_ip VARCHAR(255) NOT NULL
@@ -24,6 +25,7 @@ class TokenRow extends Row
         'generators_username' => null,
         'token' => null,
         'date_created' => '0000-00-00 00:00:00',
+        'date_last_edited' => '0000-00-00 00:00:00',
         'max_requests_per_day' => 0,
         'expiry_date' => '0000-00-00 00:00:00',
         'creators_ip' => 'NOIP',

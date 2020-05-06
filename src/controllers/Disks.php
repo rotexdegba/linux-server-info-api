@@ -2,7 +2,7 @@
 namespace Lsia\Controllers;
 /**
  * 
- * Description of Disk goes here
+ * Description of Disks goes here
  *
  * 
  */

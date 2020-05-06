@@ -1,4 +1,5 @@
 <?php
+$app_settings_ds = DIRECTORY_SEPARATOR;
 // Copy this file to ./config/app-settings.php when setting up your app in a new environment
 // You should not commit ./config/app-settings.php into version control, since it's expected
 // to contain sensitive information like database passwords, etc.
@@ -51,6 +52,14 @@ return [
         ],
         
         'ldap_server_addr' => 'ldap.server.org.ca',
+        
+        'atlas' => [
+            'pdo' => [
+                'sqlite:'.dirname(dirname(__FILE__))."{$app_settings_ds}storage{$app_settings_ds}sqlite{$app_settings_ds}token_management_dev.sqlite"
+            ],
+            'namespace' => 'Lsia\\Atlas\\Models',
+            'directory' => dirname(dirname(__FILE__))."{$app_settings_ds}src{$app_settings_ds}models{$app_settings_ds}atlas",
+        ],
         
         ////////////////////////////////////////////////////
         // End of Your App's Environment Specific Settings

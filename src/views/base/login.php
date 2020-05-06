@@ -10,29 +10,48 @@
 
 <?php if( !empty($error_message) ): ?>
 
-    <p style="background-color: orange;"><?php echo $error_message;  ?></p>
+    <p style="background-color: orange;"></p>
+    
+    <div class="card-panel red darken-4 white-text">
+        <?= $error_message;  ?>
+    </div>
+
     
 <?php endif; ?>
 
 <?php if( !$controller_object->isLoggedIn() ): ?>
     
-    <form action="<?php echo $login_path; ?>" method="post">
+    <div class="col s12">
+        <div class="icon-block">
+            <h5 class="">Login</h5>
+        </div>
         
-        <div>
-            <span>User Name: </span>
-            <input type="text" name="username" placeholder="User Name" value="<?php echo $username; ?>">
-        </div>
-        <br>
-        <div>
-            <span>Password: </span>
-            <input type="password" name="password" autocomplete="off" placeholder="Password" value="<?php echo $password; ?>">
-        </div>
-        <br>
-        <div>
-            <input type="submit" value="Login">
-        </div>
+        <div class="divider"></div>
+        
+        <form action="<?php echo $login_path; ?>" method="post" class="pad-l1">
 
-    </form>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input name="username" id="username" type="text" class="validate" value="<?php echo $username; ?>">
+                    <label for="username">User Name</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-field col s12">
+                    <input name="password" id="password" type="password" class="validate">
+                    <label for="password">Password</label>
+                </div>
+            </div>
+
+            <div>
+                <input type="submit" class="btn white-text waves-button-input" value="Login">
+            </div>
+
+        </form>
+    </div>
+    
+
     
 <?php else: ?>
     

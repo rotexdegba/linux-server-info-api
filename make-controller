@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+$ds = DIRECTORY_SEPARATOR;
+$controller_name = $argv[1];
+$command = ".{$ds}vendor{$ds}bin{$ds}s3mvc-create-controller -c ".$controller_name.' -p "./src/" -e "\\Lsia\\Controllers\\AppBase" -n "Lsia\\Controllers"';
+echo $command.PHP_EOL;
+passthru($command);

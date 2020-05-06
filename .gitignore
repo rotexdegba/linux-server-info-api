@@ -41,3 +41,5 @@ tmp/session/*
 
 storage/sqlite/*
 !storage/sqlite/.gitkeep
+
+phinx.yml

@@ -1,0 +1,31 @@
+composer require --dev robmorgan/phinx
+composer update
+./vendor/bin/phinx init
+
+./vendor/bin/phinx create AddUsersTableToDb --template="./LsiaCustomPhinxMigration.template.php.dist"
+
+./vendor/bin/phinx --verbose migrate
+./vendor/bin/phinx --verbose rollback
+
+# rollback all changes
+./vendor/bin/phinx --verbose rollback -t 0
+
+# Debugbar stuff
+# Run this command from the public directory of the project i.e. ./promis-2.0/public
+ln -s ../vendor/maximebf/debugbar/src/DebugBar/Resources debugbar
+
+$this->container->get('debugbar')["messages"]->addMessage("from controller");
+$this->container->get('debugbar')["messages"]->addMessage($variable);
+
+# Atlas
+./vendor/bin/atlas-skeleton.php ./config/app-settings.php settings.atlas
+
+##git pull overwrite local
+git reset --hard origin/master
+git pull origin
+
+## Show debugbar param non-dev environments
+?show_debugbar=1 or ?show_debugbar
+
+## Run PHP dev server
+php -S 0.0.0.0:8888 -t public

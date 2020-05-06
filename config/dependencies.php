@@ -1,9 +1,11 @@
-<?php  //Dependencies
+<?php
+/////////////////
+// Dependencies
+/////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 // Start configuration specific to all environments
 ////////////////////////////////////////////////////////////////////////////////
-                                      
 $container['logger'] = function () {
 
     $ds = DIRECTORY_SEPARATOR;
@@ -107,24 +109,36 @@ $container['namespaces_for_controllers'] = [
 ];
 
 //Object for rendering layout files
-$container['new_layout_renderer'] = $container->factory(function () {
+$container['new_layout_renderer'] = $container->factory(function ($c) {
     
     //return a new instance on each access to $container['new_layout_renderer']
     $ds = DIRECTORY_SEPARATOR;
     $path_2_layout_files = S3MVC_APP_ROOT_PATH.$ds.'src'.$ds.'layout-templates';
     $layout_renderer = new \Rotexsoft\FileRenderer\Renderer('', [], [$path_2_layout_files]);
     
+    // add common data
+    foreach ($c['common_data_for_views_and_templates'] as $key => $val) {
+        
+        $layout_renderer->$key = $val;
+    }
+    
     return $layout_renderer;
 });
 
 //Object for rendering view files
-$container['new_view_renderer'] = $container->factory(function () {
+$container['new_view_renderer'] = $container->factory(function ($c) {
     
     //return a new instance on each access to $container['new_view_renderer']
     $ds = DIRECTORY_SEPARATOR;
     $path_2_view_files = S3MVC_APP_ROOT_PATH.$ds.'src'.$ds.'views'."{$ds}base";
     $view_renderer = new \Rotexsoft\FileRenderer\Renderer('', [], [$path_2_view_files]);
 
+    // add common data
+    foreach ($c['common_data_for_views_and_templates'] as $key => $val) {
+        
+        $view_renderer->$key = $val;
+    }
+    
     return $view_renderer;
 });
 
@@ -226,3 +240,83 @@ SQL;
 ////////////////////////////////////////////////////////////////////////////
 // End Vespula.Auth Authentication setup
 ////////////////////////////////////////////////////////////////////////////
+
+
+$container['aura_session'] = function () {
+
+    $session_factory = new \Aura\Session\SessionFactory;
+   
+    return $session_factory->newInstance($_COOKIE);
+};
+
+$container['common_data_for_views_and_templates'] = function ($c) {
+    
+    $txt_no = 'No';
+    $txt_yes = 'Yes';
+    $data = [];
+    $data['__yes_no_vals'] = [
+        0 => $txt_no, '0' => $txt_no, false => $txt_no,
+        1 => $txt_yes, '1' => $txt_yes, true => $txt_yes,
+    ];
+    $data['__yes_no_record_col_names'] = [];
+//    $data['__acl_obj'] = $c['promis_acl'];
+//    $data['__locale_obj'] = $c['vespula_locale_obj'];
+//    $data['__debugbar'] = $c['debugbar'];
+    $data['__current_uri_obj'] = $c['request']->getUri();
+//    $data['__show_debugbar'] = $c['show_debugbar'];
+//    $data['__breadcumb_items'] = $c['breadcumb_items'];
+    $data['__csrf_key'] = \Lsia\Controllers\AppBase::CSRF_FORM_FIELD_KEY;
+    $data['__csrf_value'] = null;
+
+    $controller_sess_seg_key = \Lsia\Controllers\AppBase::CONTROLLER_SESSION_SEGMENT_KEY;
+    $controller_sess_segment = 
+        $c['aura_session']->getSegment($controller_sess_seg_key);
+    
+        
+    $data['__logged_in_user_name'] = '';
+    $data['__logged_in_user_record'] = [];
+    $data['__is_logged_in'] = ($c['vespula_auth']->isValid() === true);
+    
+    
+    if( $data['__is_logged_in'] ) {
+
+        $data['__logged_in_user_record'] = $c['vespula_auth']->getUserdata();
+        $data['__logged_in_user_name'] = $c['vespula_auth']->getUsername();
+        
+        $data['__csrf_value'] = htmlspecialchars(
+            $c['aura_session']->getCsrfToken()
+                              ->getValue(),
+            ENT_QUOTES, 
+            'UTF-8'
+        );
+    }
+
+    $default_controller_class_name = S3MVC_APP_DEFAULT_CONTROLLER_CLASS_NAME;
+    $controller_class_parts = explode('\\', $default_controller_class_name);
+    $default_controller_for_uri = 
+        \Slim3MvcTools\Functions\Str\toDashes( array_pop( $controller_class_parts ) );
+
+    $data['__controller_name_from_uri'] = $c['request']->getAttribute('controller', $default_controller_for_uri);
+    $data['__action_name_from_uri'] = $c['request']->getAttribute('action', '');
+
+    $data['__last_flash_message'] = 
+        $controller_sess_segment->getFlash(\Lsia\Controllers\AppBase::FLASH_MESSAGE_KEY, null);
+    
+    $data['__last_flash_message_css_class'] = 
+        $controller_sess_segment->getFlash(\Lsia\Controllers\AppBase::FLASH_MESSAGE_CSS_CLASS_KEY, null);
+    
+    return $data;
+};
+
+$container['new_response_body'] = $container->factory(function () {
+    
+    //return a new instance on each access to $container['new_response_body']
+    return new \Slim\Http\Body(fopen('php://temp', 'r+'));
+});
+
+$container['atlas'] = function ($c) {
+   
+    return \Atlas\Orm\Atlas::new(
+        ...$c->get('settings')['atlas']['pdo']
+    );
+};

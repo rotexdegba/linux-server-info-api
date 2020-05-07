@@ -1,9 +1,14 @@
 <?php
 namespace Lsia\Controllers;
+
+use \Lsia\Utils;
+use \Psr\Container\ContainerInterface;
+use \Psr\Http\Message\ResponseInterface;
+use \Psr\Http\Message\ServerRequestInterface;
+
 /**
  * 
  * Description of Disks goes here
- *
  * 
  */
 class Disks extends AppBase
@@ -36,8 +41,8 @@ class Disks extends AppBase
      * 
      */
     public function __construct(
-        \Psr\Container\ContainerInterface $container, $controller_name_from_uri, $action_name_from_uri, 
-        \Psr\Http\Message\ServerRequestInterface $req, \Psr\Http\Message\ResponseInterface $res
+        ContainerInterface $container, ?string $controller_name_from_uri, ?string $action_name_from_uri, 
+        ServerRequestInterface $req, ResponseInterface $res
     ) {
         parent::__construct($container, $controller_name_from_uri, $action_name_from_uri, $req, $res);
     }
@@ -53,8 +58,8 @@ class Disks extends AppBase
     public function actionUsage() {
         
         $data = [
-            'raw'=>\Lsia\Utils::generateDiskUsageData(),
-            'human_readable'=>\Lsia\Utils::generateDiskUsageDataHumanReadable()
+            'raw' => Utils::generateDiskUsageData(),
+            'human_readable' => Utils::generateDiskUsageDataHumanReadable()
         ];
         $this->response->getBody()->write(json_encode($data));
 
@@ -69,7 +74,7 @@ class Disks extends AppBase
         return $response;
     }
     
-    public function postAction(\Psr\Http\Message\ResponseInterface $response) {
+    public function postAction(ResponseInterface $response) {
         
         // add code that you need to be executed after each controller action method is executed
         $new_response = parent::postAction($response);

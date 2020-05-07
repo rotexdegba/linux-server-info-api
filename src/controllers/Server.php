@@ -1,10 +1,13 @@
 <?php
 namespace Lsia\Controllers;
 
+use \Psr\Container\ContainerInterface;
+use \Psr\Http\Message\ResponseInterface;
+use \Psr\Http\Message\ServerRequestInterface;
+
 /**
  * 
  * Description of Server goes here
- *
  * 
  */
 class Server extends \Lsia\Controllers\AppBase
@@ -37,8 +40,8 @@ class Server extends \Lsia\Controllers\AppBase
      * 
      */
     public function __construct(
-        \Psr\Container\ContainerInterface $container, $controller_name_from_uri, $action_name_from_uri, 
-        \Psr\Http\Message\ServerRequestInterface $req, \Psr\Http\Message\ResponseInterface $res
+        ContainerInterface $container, ?string $controller_name_from_uri, ?string $action_name_from_uri, 
+        ServerRequestInterface $req, ResponseInterface $res
     ) {
         parent::__construct($container, $controller_name_from_uri, $action_name_from_uri, $req, $res);
     }
@@ -47,10 +50,8 @@ class Server extends \Lsia\Controllers\AppBase
         
         //get the contents of the view first
         $view_str = $this->renderView('index.php', ['controller_object'=>$this]);
-        return $view_str;
         
-        //uncomment and edit the line below to incorporate the view above into your app's template
-        //return $this->renderLayout( $this->layout_template_file_name, ['content'=>$view_str] );
+        return $this->renderLayout( $this->layout_template_file_name, ['content'=>$view_str] );
     }
     
     public function preAction() {
@@ -61,7 +62,7 @@ class Server extends \Lsia\Controllers\AppBase
         return $response;
     }
     
-    public function postAction(\Psr\Http\Message\ResponseInterface $response) {
+    public function postAction(ResponseInterface $response) {
         
         // add code that you need to be executed after each controller action method is executed
         $new_response = parent::postAction($response);

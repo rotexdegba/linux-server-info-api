@@ -1,10 +1,14 @@
 <?php
 namespace Lsia\Controllers;
 
+use \Psr\Container\ContainerInterface;
+use \Psr\Http\Message\ResponseInterface;
+use \Psr\Http\Message\ServerRequestInterface;
+use \VersatileCollections\ArraysCollection;
+
 /**
  * 
  * Description of AppBase goes here
- *
  * 
  */
 class AppBase extends \Slim3MvcTools\Controllers\BaseController
@@ -50,8 +54,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
      * 
      */
     public function __construct(
-        \Psr\Container\ContainerInterface $container, $controller_name_from_uri, $action_name_from_uri, 
-        \Psr\Http\Message\ServerRequestInterface $req, \Psr\Http\Message\ResponseInterface $res
+        ContainerInterface $container, ?string $controller_name_from_uri, ?string $action_name_from_uri, 
+        ServerRequestInterface $req, ResponseInterface $res
     ) {
         parent::__construct($container, $controller_name_from_uri, $action_name_from_uri, $req, $res);
         
@@ -92,7 +96,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 . ' for a more unified user experience.!!!! <br>';
         $this->setWarningFlashMessage(str_repeat($msg, 1));
         
-        return $this->redirect(s3MVC_MakeLink('/disks'));
+        return $this->redirect(s3MVC_MakeLink('/'));
     }
     
     public function preAction() {
@@ -122,6 +126,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 $csrf_value = '';
             }
             
+            /** @var \Aura\Session\CsrfToken $token */
             $token = $this->container->get('aura_session')->getCsrfToken();
             
             if ( !$token->isValid($csrf_value) ) {
@@ -135,11 +140,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 //generate error page content using the layout and write it into the response body
                 $layout_data = [];
                 $layout_data['content'] = "Bad Request. Possible cross-site request forgery.";
-
                 $error_page = $this->renderLayout( $this->layout_template_file_name, $layout_data );
-
                 $new_response->getBody()->write( $error_page );
-
                 $this->response = $new_response->withStatus(403)
                                                ->withHeader('Content-Type', 'text/html');
                 $response = $this->response;
@@ -149,7 +151,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $response;
     }
     
-    public function postAction(\Psr\Http\Message\ResponseInterface $response) {
+    public function postAction(ResponseInterface $response) {
         
         // add code that you need to be executed after each controller action method is executed
         $new_response = parent::postAction($response);
@@ -207,9 +209,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $this->response->withStatus($status_code)
                               ->withHeader('Location', $rdr_path);
     }
-    
-    
-    
+
     protected function setErrorFlashMessage($msg, $for_curent_request_only=false) {
         
         $msg_array = ['message'=>$msg, 'title'=>'<i class="material-icons medium">error</i>'];
@@ -301,8 +301,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                         . PHP_EOL. "Message: $msg" 
                         . PHP_EOL. str_replace(PHP_EOL, PHP_EOL. "\t\t\t", "<pre>\t\t\t" . $req_obj_as_str . '</pre>');
                 
-        //$from_addr = 'donotreply@greenenergydirectory.com';
-        //$subject = 'Ged Error:' . $email_subject;
+//        $from_addr = 'donotreply@serverapi.com';
+//        $subject = 'Server Info API Error:' . $email_subject;
         
         $container['logger']->error( str_replace(['<pre>', '</pre>'], ['', ''], $message_body) );
         
@@ -381,7 +381,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         $atlasInfoObj = $this->container->get('atlas_info');
         
         // Table cols excuding primary key col
-        return \VersatileCollections\ArraysCollection::makeNew(
+        return ArraysCollection::makeNew(
                     $atlasInfoObj->fetchColumns($tableName)
                 )->filterAll(
                     function($key, $item) {

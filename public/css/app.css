@@ -5,9 +5,22 @@
  *
  * Made By MaterializeCSS.com
  */
-#main-content-div{
-    
+
+/* Start Sticky Footer Code */
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
+
+#main-content-div {
+  /*flex: 1 0 auto;*/
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: auto;
+  width: 100%;
+}
+/* End Sticky Footer Code */ 
 
 .icon-block {
     padding: 0 15px;
@@ -42,8 +55,17 @@
     display: inline-block;
 }
 
+/* large and larger */
 @media only screen and (min-width: 993px) {
   .container {
     width: 90%;
   }
+}
+
+/* medium and smaller */
+@media only screen and (max-width: 992px) {
+
+    .pad2-5-on-med-and-down{
+        padding-left: 2.5em !important;
+    }
 }

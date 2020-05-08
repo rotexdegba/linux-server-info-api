@@ -339,6 +339,36 @@ class Tokens extends \Lsia\Controllers\AppBase
         }
     }
     
+    public function actionDelete($id) {
+        
+        /** @var \Lsia\Atlas\Models\Token\TokenRecord $tokenRecord */
+        $tokenRecord = $this->getAndValidateRecordForEditOrDelete($id.'');
+                
+        if( $tokenRecord instanceof ResponseInterface ) {
+            
+            // validation failed, a response with details was 
+            // returned instead of a record
+            return $tokenRecord; 
+        }
+        
+        /** @var \Atlas\Orm\Atlas $atlasObj */
+        $atlasObj = $this->container->get('atlas');
+        
+        try {
+            $atlasObj->delete($tokenRecord);
+            $this->setSuccessFlashMessage('Token Successfully Deleted!');
+            
+            return $this->redirect(s3MVC_MakeLink('/tokens/my-tokens'));
+
+        } catch (\Exception $exc) {
+
+            $this->logError($exc->getTraceAsString(), 'Error Deleting Token');
+            $this->setErrorFlashMessage('Token Not Successfully Deleted!');
+            
+            return $this->redirect(s3MVC_MakeLink("/tokens/my-tokens/{$id}"));
+        }
+    }
+    
     public function preAction() {
         
         // add code that you need to be executed before each controller action method is executed

@@ -12,6 +12,8 @@
         <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/materialize/css/materialize.min.css'); ?>" media="screen,projection" />
 
         <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/css/app.css'); ?>" media="screen,projection" />
+        
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/js/jquery-3.5.0.min.js'); ?>"></script>
     </head>
     <body>
         <nav class="light-blue lighten-1" role="navigation">
@@ -190,7 +192,7 @@
             
         </footer>
 
-        <script type="text/javascript" src="<?= s3MVC_MakeLink('/js/jquery-3.5.0.min.js'); ?>"></script>
+        
         <script type="text/javascript" src="<?= s3MVC_MakeLink('/materialize/js/materialize.min.js'); ?>"></script>
         <script type="text/javascript" src="<?= s3MVC_MakeLink('/js/app.js'); ?>"></script>
     </body>

@@ -394,7 +394,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                  ->toArray();
     }
     
-    protected function newRecordDataFromPost(array $postData, array $tableCols): array {
+    protected function getRecordDataFromPost(array $postData, array $tableCols): array {
         
         $newRecordData = [];
         
@@ -407,5 +407,26 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         }
         
         return $newRecordData;
+    }
+    
+    protected function generateResponse( 
+        string $responseMessage, 
+        int $statusCode=200, 
+        bool $renderLayoutForHtmlContent=false,
+        string $contentType='text/html'
+    ) {
+        $new_response = $this->response->withBody($this->container->get('new_response_body'));
+        $layout_data = [];
+        $layout_data['content'] = $responseMessage;
+        
+        $renderedMessage = 
+            ($renderLayoutForHtmlContent)
+                ? $this->renderLayout( $this->layout_template_file_name, $layout_data )
+                : $responseMessage;
+
+        $new_response->getBody()->write( $renderedMessage );
+
+        return $new_response->withStatus($statusCode)
+                            ->withHeader('Content-Type', $contentType);
     }
 }

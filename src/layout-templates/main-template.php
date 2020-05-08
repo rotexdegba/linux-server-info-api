@@ -23,7 +23,7 @@
                 <div class="row">
                     
                     <!-- home link -->
-                    <div class="col s12 l2">
+                    <div class="col s12 l3">
                         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a>
                         <a id="logo-container" href="<?= s3MVC_MakeLink('/'); ?>" class="brand-logo left pad2-5-on-med-and-down">
                             <i class="large material-icons">dns</i>Server Info API
@@ -31,14 +31,14 @@
                     </div>
 
                     <!-- bread crumb links -->
-                    <div class="col l6 center hide-on-med-and-down">
+                    <div class="col l4 center hide-on-med-and-down">
                         <a href="#!" class="breadcrumb">First</a>
                         <a href="#!" class="breadcrumb">Second</a>
                         <a href="#!" class="breadcrumb">Third</a>
                     </div>
 
                     <!-- login / logout button -->
-                    <div class="col s12 l4">
+                    <div class="col s12 l5">
                         <ul class="right">
                             <?php if ($__is_logged_in): ?>
                                 <li>

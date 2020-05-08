@@ -22,12 +22,14 @@
     </div>
     
     <?php if(\Lsia\Utils::isCountableWithData($activeTokenRecords)): ?>
-        <?php $cssActiveClassForFirstItem = 'active'; ?>
+        <?php $cssActiveClassForFirstItem =  empty($idOfLastEditedToken) ? 'active' : ''; ?>
         <ul class="collapsible expandable">
             
             <?php /** @var \Lsia\Atlas\Models\Token\TokenRecord $tokenRecord */ ?>
             <?php foreach($activeTokenRecords as $tokenRecord): ?>
-                <li class="<?= $cssActiveClassForFirstItem; ?>">
+                <li class="<?= ($idOfLastEditedToken.'' === $tokenRecord->id) ? 'active' : $cssActiveClassForFirstItem; ?>"
+                    id="token-<?= $tokenRecord->id ?>"
+                >
                     <div class="collapsible-header"><i class="material-icons">vpn_key</i><?= substr($tokenRecord->token, 0 , 10). ' ....'; ?></div>
                     <div class="collapsible-body blue-grey darken-1">
                         <ul class="collection">
@@ -71,11 +73,13 @@
     </div>
     
     <?php if(\Lsia\Utils::isCountableWithData($expiredTokenRecords)): ?>
-        <?php $cssActiveClassForFirstItem = 'active'; ?>
+        <?php $cssActiveClassForFirstItem =  empty($idOfLastEditedToken) ? 'active' : ''; ?>
         <ul class="collapsible expandable">
             <?php /** @var \Lsia\Atlas\Models\Token\TokenRecord $tokenRecord */ ?>
             <?php foreach($expiredTokenRecords as $tokenRecord): ?>
-                <li class="<?= $cssActiveClassForFirstItem; ?>">
+                <li class="<?= ($idOfLastEditedToken.'' === $tokenRecord->id) ? 'active' : $cssActiveClassForFirstItem; ?>"
+                    id="token-<?= $tokenRecord->id ?>"
+                >
                     <div class="collapsible-header">
                         <i class="material-icons">vpn_key</i><?= substr($tokenRecord->token, 0 , 10). ' ....'; ?>
                     </div>
@@ -115,3 +119,18 @@
     
     <?php endif; ?>
 </div>
+
+<script>
+    <?php if( !empty($idOfLastEditedToken) ): ?>
+
+        $(document).ready(function() {
+            
+            $('.collapsible').collapsible({accordion: false});
+            
+            // Scroll screen to the edited token
+            //var elmnt = document.getElementById("token-<?= $idOfLastEditedToken; ?>");
+            //elmnt.scrollIntoView();
+        });
+
+    <?php endif; ?>
+</script>

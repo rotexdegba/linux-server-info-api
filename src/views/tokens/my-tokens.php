@@ -121,16 +121,14 @@
 </div>
 
 <script>
-    <?php if( !empty($idOfLastEditedToken) ): ?>
+    $(document).ready(function() {
 
-        $(document).ready(function() {
-            
-            $('.collapsible').collapsible({accordion: false});
-            
+        $('.collapsible').collapsible({accordion: false});
+        
+        <?php if( !empty($idOfLastEditedToken) ): ?>
             // Scroll screen to the edited token
             //var elmnt = document.getElementById("token-<?= $idOfLastEditedToken; ?>");
             //elmnt.scrollIntoView();
-        });
-
-    <?php endif; ?>
+        <?php endif; ?>
+    });
 </script>

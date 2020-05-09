@@ -10,7 +10,11 @@
         "atlas/orm": "^3.1",
         "siriusphp/validation": "^3.0",
         "vespula/form": "^1.0",
-        "rotexsoft/versatile-collections": "^3.1"
+        "rotexsoft/versatile-collections": "^3.1",
+        "trntv/probe": "^1.0",
+        "linfo/linfo": "^4.0",
+        "danielme85/simple-server-info": "^1.0",
+        "gemorroj/ginfo": "^5.1"
     },
     "require-dev": {
         "atlas/cli": "^2.2",

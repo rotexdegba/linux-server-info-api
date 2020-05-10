@@ -129,7 +129,9 @@ class Server extends \Lsia\Controllers\AppBase
                 }
             }
         }
-        
+/** @var \danielme85\Server\Info $d */        
+$d = $this->container->get('danielme85_server_info');
+s3MVC_DumpVar(count($d->processes()));
         //get the contents of the view first
         $view_str = $this->renderView('index.php', $viewData);
         

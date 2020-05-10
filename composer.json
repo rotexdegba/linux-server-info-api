@@ -25,7 +25,7 @@
         "classmap": [ "src/", "tests/", "vendor/slim/" ]
     },
     "scripts": {
-        "post-install-cmd": [
+        "generate-config-files": [
             "php -r \" echo 'Copying config files'; \"",
             "php -r \"file_exists('phinx.yml') || copy('phinx.yml.dist', 'phinx.yml');\"",
             "php -r \"file_exists('./config/app-settings.php') || copy('./config/app-settings-dist.php', './config/app-settings.php');\"",

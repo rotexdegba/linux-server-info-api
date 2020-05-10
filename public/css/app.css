@@ -65,7 +65,11 @@ body {
 /* medium and smaller */
 @media only screen and (max-width: 992px) {
 
-    .pad2-5-on-med-and-down{
+    .pad-l-2-5-on-med-and-down {
         padding-left: 2.5em !important;
+    }
+
+    .pad-t-2-5-on-med-and-down {
+        padding-top: 2.5em !important;
     }
 }

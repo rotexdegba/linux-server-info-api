@@ -341,3 +341,24 @@ $container['sirius_validator'] = $container->factory(function () {
     //return a new instance on each access
     return new \Sirius\Validation\Validator();
 });
+
+$container['ginfo_server_info'] = function ($c) {
+    
+    return new \Ginfo\Ginfo();
+};
+
+$container['linfo_server_info'] = function ($c) {
+    
+    return new \Linfo\Linfo();
+};
+
+$container['trntv_server_info'] = function ($c) {
+    
+    /** returns an instance of \Probe\Provider\ProviderInterface */
+    return \Probe\ProviderFactory::create();
+};
+
+$container['danielme85_server_info'] = function ($c) {
+    
+    return new \danielme85\Server\Info();
+};

@@ -10,6 +10,28 @@ namespace Lsia;
  */
 class Utils {
 
+    public static function getNullIfEmpty($val) {
+        
+        if(
+            empty($val) && !is_object($val) && !is_array($val)
+            && !is_bool($val) && $val !== 0 && $val !== '0'
+        ) {
+            return null;
+        }
+        
+        return $val;
+    }
+    
+    public static function getDefaultIfEmpty($val, $default) {
+        
+        return static::getNullIfEmpty($val) !== null ? $val : $default;
+    }
+    
+    public static function getValIfTrueOrDefault(bool $expr, string $true_val, string $default_val='') {
+        
+        return $expr ? $true_val : $default_val;
+    }
+    
     public static function bytesToHumanReadable($bytes, $decimalPlaces = 2) {
 
         $type = array("bytes", "KB", "MB", "GB", "TB", "PB", "EXB", "ZB", "YB");

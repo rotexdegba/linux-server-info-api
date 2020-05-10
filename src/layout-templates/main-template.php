@@ -25,7 +25,7 @@
                     <!-- home link -->
                     <div class="col s12 l3">
                         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a>
-                        <a id="logo-container" href="<?= s3MVC_MakeLink('/'); ?>" class="brand-logo left pad2-5-on-med-and-down">
+                        <a id="logo-container" href="<?= s3MVC_MakeLink('/'); ?>" class="brand-logo left pad-l-2-5-on-med-and-down">
                             <i class="large material-icons">dns</i>Server Info API
                         </a>
                     </div>

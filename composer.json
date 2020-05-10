@@ -26,10 +26,10 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "@php -r \" echo 'Copying config files'; \"",
-            "@php -r \"file_exists('phinx.yml') || copy('phinx.yml.dist', 'phinx.yml');\"",
-            "@php -r \"file_exists('./config/app-settings.php') || copy('./config/app-settings-dist.php', './config/app-settings.php');\"",
-            "@php -r \"file_exists('./config/env.php') || copy('./config/env-dist.php', './config/env.php');\""
+            "php -r \" echo 'Copying config files'; \"",
+            "php -r \"file_exists('phinx.yml') || copy('phinx.yml.dist', 'phinx.yml');\"",
+            "php -r \"file_exists('./config/app-settings.php') || copy('./config/app-settings-dist.php', './config/app-settings.php');\"",
+            "php -r \"file_exists('./config/env.php') || copy('./config/env-dist.php', './config/env.php');\""
         ]
     }
 }

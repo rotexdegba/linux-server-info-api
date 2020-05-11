@@ -74,7 +74,7 @@ class Server extends \Lsia\Controllers\AppBase
         // TODO: Add some common software version info to the section that requires
         //       users to be logged in. E.g php, mysql, apache, python, ruby & more
         $viewData = [
-            'hostName'              => [ 'label' => 'Host Name',            'value' => $generalInfo->getHostname() ],
+            'hostName'              => [ 'label' => 'Host Name',                'value' => $generalInfo->getHostname() ],
             'distroNameAndVersion'  => [ 'label' => 'Distro Name and Version',  'value' => $generalInfo->getOsName() ],
             'kernelVersion'         => [ 'label' => 'Kernel Version',           'value' => $generalInfo->getKernel() ],
             'osFamily'              => [ 'label' => 'OS Family',                'value' => $osLinfoObj->getOS() ],

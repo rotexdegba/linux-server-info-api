@@ -43,3 +43,4 @@ storage/sqlite/*
 !storage/sqlite/.gitkeep
 
 phinx.yml
+.~lock.php-sysinfo-packages-comparison.xlsx#

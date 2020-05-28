@@ -1,6 +1,8 @@
 <?php
 namespace Lsia\Controllers;
 
+use Lsia\Utils;
+use Ginfo\Info\General as GinfoGeneral;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -286,7 +288,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         $container = $this->container;
 
         $req_obj_as_str_uncleaned = 
-            \Lsia\Utils::psr7RequestObjToString($this->request) . PHP_EOL;
+            Utils::psr7RequestObjToString($this->request) . PHP_EOL;
 
         //scrub password if this was a post from the login form
         $req_obj_as_str = preg_replace('/&password=[^&\n]*/i', '&password=SCRUBBED_NOTHING_TOO_SEE_HERE', $req_obj_as_str_uncleaned);
@@ -320,7 +322,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     public function logNotice($msg) {
         
         $req_as_str = 
-            \Lsia\Utils::psr7RequestObjToString(
+            Utils::psr7RequestObjToString(
                 $this->request,
                 ['route','routeInfo'],
                 true,  //$skip_req_attribs
@@ -349,7 +351,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     public function logWarning($msg) {
         
         $req_as_str = 
-            \Lsia\Utils::psr7RequestObjToString(
+            Utils::psr7RequestObjToString(
                 $this->request,
                 ['route','routeInfo'],
                 true,  //$skip_req_attribs
@@ -428,5 +430,154 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
 
         return $new_response->withStatus($statusCode)
                             ->withHeader('Content-Type', $contentType);
+    }
+    
+    
+    /******************************************************************/
+    /******************************************************************/
+    //// API Data Generation Methods
+    /******************************************************************/
+    /******************************************************************/
+    
+    protected function generateSystemOverviewData() {
+        
+        /** @var \Linfo\Linfo $linfo */
+        $linfo = $this->container->get('linfo_server_info');
+        
+        /** @var \Linfo\OS\OS $linfoObj */
+        $linfoObj = $linfo->getParser();
+        
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        $generalInfo = $ginfoObj->getGeneral();
+        
+        /** @var \Probe\Provider\ProviderInterface $trntInfo */
+        $trntInfo = $this->container->get('trntv_server_info');
+        
+        $systemOverviewData = ['system_overview_schema'=>[]];
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Get host name
+        ////////////////////////////////////////////////////////////////////////
+        $systemOverviewData['system_overview_schema']['host_name'] = \gethostname();
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Get OS Family
+        ////////////////////////////////////////////////////////////////////////        
+        $systemOverviewData['system_overview_schema']['os_family'] = PHP_OS_FAMILY;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Get Kernel Version
+        ////////////////////////////////////////////////////////////////////////
+        
+        // retrieve via linfo
+        $kernelVersion = $linfoObj->getKernel();
+
+        if (Utils::getNullIfEmpty($kernelVersion) === null) {
+
+            // try to retrieve via ginfo or php_uname('r')
+            $kernelVersion = ($generalInfo instanceof GinfoGeneral) 
+                ? Utils::getDefaultIfEmpty(
+                    $generalInfo->getKernel(),
+                    Utils::getDefaultIfEmpty(php_uname('r'), 'Not Available')
+                  ) 
+                : Utils::getDefaultIfEmpty(php_uname('r'), 'Not Available');
+        }
+        
+        $systemOverviewData['system_overview_schema']['kernel_version'] = $kernelVersion;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Get Kernel Version
+        ////////////////////////////////////////////////////////////////////////
+        
+        // retrieve via ginfo
+        $distroName = ($generalInfo instanceof GinfoGeneral) 
+                            ? Utils::getDefaultIfEmpty($generalInfo->getOsName(), '') : '';
+
+        if (Utils::getNullIfEmpty($distroName) === null) {
+
+            // try to retrieve via trntv/probe
+            $distroName = Utils::getDefaultIfEmpty($trntInfo->getOsRelease(), 'Not Available');
+        }
+        
+        $systemOverviewData['system_overview_schema']['distro_name'] = $distroName;
+        
+//s3MVC_DumpVar( str_replace('"', '', $trntInfo->getOsRelease()) );
+s3MVC_DumpVar($systemOverviewData);
+        
+        
+        $generalInfo = $ginfoObj->getGeneral();
+var_dump($ginfo->getOs()->getUptime());
+        $uptime = '';
+        $lastBootedOn = '';
+        
+        if( $generalInfo->getUptime() instanceof DateInterval ) {
+            
+            $uptime = $generalInfo->getUptime()->format('%d days, %h hours, %i minutes, %s seconds');
+            $lastBootedOn = (new DateTime())->sub($generalInfo->getUptime())->format('D, j M Y H:i:s T');
+        }
+        
+        // TODO: Add some common software version info to the section that requires
+        //       users to be logged in. E.g php, mysql, apache, python, ruby & more
+        $viewData = [
+            'distroNameAndVersion'  => [ 'label' => 'Distro Name and Version',  'value' => $generalInfo->getOsName() ],
+            'kernelVersion'         => [ 'label' => 'Kernel Version',           'value' => $generalInfo->getKernel() ],
+            'osFamily'              => [ 'label' => 'OS Family',                'value' => $linfoObj->getOS() ],
+            'architecture'          => [ 'label' => 'Architecture',             'value' => $generalInfo->getArchitecture() ],
+            'machineModel'          => [ 'label' => 'Machine Model',            'value' => Utils::getDefaultIfEmpty($generalInfo->getModel(), '') ],
+            'lastBootedOn'          => [ 'label' => 'Last booted on',           'value' => $lastBootedOn ],
+            'uptime'                => [ 'label' => 'Uptime',                   'value' => $uptime ],
+            'loggedInUsers'         => [ 'label' => 'Logged in users',          'value' => Utils::getValIfTrueOrGetDefault(is_countable($generalInfo->getLoggedUsers()), count($generalInfo->getLoggedUsers()), 'Unknown') ],
+            'processSummaryInfo'    => [],
+        ];
+        
+        $processInfo = $linfoObj->getProcessStats();
+        $processInfoG = $ginfoObj->getProcesses();
+var_dump(count($processInfoG));
+//var_dump($processInfoG);
+s3MVC_DumpVar($processInfoG);
+        
+        if( is_array($processInfo) ) {
+            
+            if(array_key_exists('proc_total', $processInfo)) {
+                
+                $viewData['processSummaryInfo'][] = 
+                    [ 'label' => 'Total Number of Processes', 'value' => $processInfo['proc_total'] ];
+            }
+            
+            if(array_key_exists('threads', $processInfo)) {
+                
+                $viewData['processSummaryInfo'][] = 
+                    [ 'label' => 'Total Number of Threads', 'value' => $processInfo['threads'] ];
+            }
+            
+            if(array_key_exists('totals', $processInfo) && is_array($processInfo['totals'])) {
+                
+                if(array_key_exists('running', $processInfo['totals'])) {
+
+                    $viewData['processSummaryInfo'][] = 
+                        [ 'label' => 'Total Number of Running Processes', 'value' => $processInfo['totals']['running'] ];
+                }
+                
+                if(array_key_exists('sleeping', $processInfo['totals'])) {
+
+                    $viewData['processSummaryInfo'][] = 
+                        [ 'label' => 'Total Number of Sleeping Processes', 'value' => $processInfo['totals']['sleeping'] ];
+                }
+                
+                if(array_key_exists('stopped', $processInfo['totals'])) {
+
+                    $viewData['processSummaryInfo'][] = 
+                        [ 'label' => 'Total Number of Stopped Processes', 'value' => $processInfo['totals']['stopped'] ];
+                }
+                
+                if(array_key_exists('zombie', $processInfo['totals'])) {
+
+                    $viewData['processSummaryInfo'][] = 
+                        [ 'label' => 'Total Number of Zombie Processes', 'value' => $processInfo['totals']['zombie'] ];
+                }
+            }
+        } 
     }
 }

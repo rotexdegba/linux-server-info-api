@@ -10,10 +10,11 @@ namespace Lsia;
  */
 class Utils {
 
-    public static function getNullIfEmpty($val) {
+    public static function getNullIfEmpty($val, bool $treatEmptyArrayAsEmpty=true) {
         
         if(
-            empty($val) && !is_object($val) && !is_array($val)
+            empty($val) && !is_object($val) 
+            && ( !is_array($val) || (is_array($val) && $treatEmptyArrayAsEmpty))
             && !is_bool($val) && $val !== 0 && $val !== '0'
         ) {
             return null;
@@ -27,7 +28,7 @@ class Utils {
         return static::getNullIfEmpty($val) !== null ? $val : $default;
     }
     
-    public static function getValIfTrueOrDefault(bool $expr, string $true_val, string $default_val='') {
+    public static function getValIfTrueOrGetDefault(bool $expr, string $true_val, string $default_val='') {
         
         return $expr ? $true_val : $default_val;
     }

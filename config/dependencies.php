@@ -533,8 +533,3 @@ $container['trntv_server_info'] = function ($c) {
     /** returns an instance of \Probe\Provider\ProviderInterface */
     return \Probe\ProviderFactory::create();
 };
-
-$container['danielme85_server_info'] = function ($c) {
-    
-    return new \danielme85\Server\Info();
-};

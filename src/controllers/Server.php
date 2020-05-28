@@ -7,6 +7,9 @@ use DateInterval;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VersatileCollections\ObjectsCollection;
+use VersatileCollections\GenericCollection;
+use VersatileCollections\StringsCollection;
 
 /**
  * 
@@ -51,6 +54,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionIndex() {
         
+$this->generateSystemOverviewData();
+        
         /** @var \Linfo\Linfo $linfo */
         $linfo = $this->container->get('linfo_server_info');
         
@@ -61,7 +66,7 @@ class Server extends \Lsia\Controllers\AppBase
         $ginfo = $this->container->get('ginfo_server_info');
         $osGinfoObj = $ginfo->getInfo();
         $generalInfo = $osGinfoObj->getGeneral();
-
+var_dump($ginfo->getOs()->getUptime());
         $uptime = '';
         $lastBootedOn = '';
         
@@ -82,11 +87,15 @@ class Server extends \Lsia\Controllers\AppBase
             'machineModel'          => [ 'label' => 'Machine Model',            'value' => Utils::getDefaultIfEmpty($generalInfo->getModel(), '') ],
             'lastBootedOn'          => [ 'label' => 'Last booted on',           'value' => $lastBootedOn ],
             'uptime'                => [ 'label' => 'Uptime',                   'value' => $uptime ],
-            'loggedInUsers'         => [ 'label' => 'Logged in users',          'value' => Utils::getValIfTrueOrDefault(is_countable($generalInfo->getLoggedUsers()), count($generalInfo->getLoggedUsers()), 'Unknown') ],
+            'loggedInUsers'         => [ 'label' => 'Logged in users',          'value' => Utils::getValIfTrueOrGetDefault(is_countable($generalInfo->getLoggedUsers()), count($generalInfo->getLoggedUsers()), 'Unknown') ],
             'processSummaryInfo'    => [],
         ];
         
         $processInfo = $osLinfoObj->getProcessStats();
+        $processInfoG = $osGinfoObj->getProcesses();
+var_dump(count($processInfoG));
+//var_dump($processInfoG);
+s3MVC_DumpVar($processInfoG);
         
         if( is_array($processInfo) ) {
             
@@ -129,10 +138,6 @@ class Server extends \Lsia\Controllers\AppBase
                 }
             }
         }
-        
-///** @var \danielme85\Server\Info $d */        
-//$d = $this->container->get('danielme85_server_info');
-//s3MVC_DumpVar(count($d->processes()));
 
         //get the contents of the view first
         $view_str = $this->renderView('index.php', $viewData);

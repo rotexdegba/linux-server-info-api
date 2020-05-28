@@ -1,6 +1,10 @@
 # Server Info API Documentation
 
 ## Installation Instructions
+* On centos make sure php-posix is installed
+    - sudo yum install php-posix
+    - If running apache webserver:
+        - sudo service httpd restart
 * Make sure **./logs**, **./storage/sqlite** & **./tmp/session** are writable by your webserver
 * Run composer install
 * Run composer run-script generate-config-files

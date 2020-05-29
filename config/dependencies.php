@@ -344,7 +344,8 @@ $container['sirius_validator'] = $container->factory(function () {
 
 $container['ginfo_server_info'] = function ($c) {
     
-    return new \Ginfo\Ginfo();
+    //return new \Ginfo\Ginfo();
+    return new \ExtendedGInfo();
 };
 
 $container['linfo_server_info'] = function ($c) {
@@ -525,7 +526,17 @@ $container['linfo_server_info'] = function ($c) {
         //'ps' // For example
     ];
     
-    return new \Linfo\Linfo($settings);
+    $linfo = new \Linfo\Linfo($settings);
+    
+    static $isScanned;
+    
+    if( !$isScanned ) {
+        
+        $linfo->scan();
+        $isScanned = true;
+    }
+    
+    return $linfo;
 };
 
 $container['trntv_server_info'] = function ($c) {

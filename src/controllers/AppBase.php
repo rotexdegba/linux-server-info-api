@@ -1,7 +1,9 @@
 <?php
 namespace Lsia\Controllers;
 
+use DateTime;
 use Lsia\Utils;
+use DateInterval;
 use Ginfo\Info\General as GinfoGeneral;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -488,7 +490,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         $systemOverviewData['system_overview_schema']['kernel_version'] = $kernelVersion;
         
         ////////////////////////////////////////////////////////////////////////
-        // Get Kernel Version
+        // Get Distro Name
         ////////////////////////////////////////////////////////////////////////
         
         // retrieve via ginfo
@@ -503,20 +505,81 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         
         $systemOverviewData['system_overview_schema']['distro_name'] = $distroName;
         
-//s3MVC_DumpVar( str_replace('"', '', $trntInfo->getOsRelease()) );
-s3MVC_DumpVar($systemOverviewData);
+        ////////////////////////////////////////////////////////////////////////
+        // Get Architecture
+        ////////////////////////////////////////////////////////////////////////        
+        $systemOverviewData['system_overview_schema']['architecture'] = 
+                    Utils::getDefaultIfEmpty(php_uname('m'), 'Not Available');
         
+        ////////////////////////////////////////////////////////////////////////
+        // Get System Model
+        ////////////////////////////////////////////////////////////////////////        
+        $systemOverviewData['system_overview_schema']['system_model'] = 
+            ($generalInfo instanceof GinfoGeneral) 
+                ? Utils::getDefaultIfEmpty($generalInfo->getModel(), 'Not Available') : 'Not Available';
         
-        $generalInfo = $ginfoObj->getGeneral();
-var_dump($ginfo->getOs()->getUptime());
-        $uptime = '';
-        $lastBootedOn = '';
+        ////////////////////////////////////////////////////////////////////////
+        // Get Uptime
+        ////////////////////////////////////////////////////////////////////////
         
-        if( $generalInfo->getUptime() instanceof DateInterval ) {
-            
-            $uptime = $generalInfo->getUptime()->format('%d days, %h hours, %i minutes, %s seconds');
-            $lastBootedOn = (new DateTime())->sub($generalInfo->getUptime())->format('D, j M Y H:i:s T');
+        // retrieve via ginfo
+        $uptime = ($ginfo->getOs() instanceof \Ginfo\OS\OS) 
+                    ? Utils::getDefaultIfEmpty($ginfo->getOs()->getUptime(), '') : '';
+
+        if ( Utils::getNullIfEmpty($uptime) === null ) {
+
+            // try to retrieve via trntv/probe
+            $uptime = Utils::getDefaultIfEmpty($trntInfo->getUptime(), -1);
         }
+        
+        $systemOverviewData['system_overview_schema']['uptime'] = (int)$uptime;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Get Uptime Text
+        ////////////////////////////////////////////////////////////////////////
+
+        // retrieve via ginfo
+        $uptimeText = ($generalInfo instanceof GinfoGeneral && $generalInfo->getUptime() instanceof DateInterval) 
+                        ? 
+                        Utils::getDefaultIfEmpty(
+                            $generalInfo->getUptime()->format('%d days, %h hours, %i minutes, %s seconds')
+                            , ''
+                        ) 
+                        : 
+                        '';
+
+        if ( Utils::getNullIfEmpty($uptimeText) === null ) {
+
+            // try to retrieve via linfo
+            $uptimeText = Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getUpTime()) && isset($linfoObj->getUpTime()['text']), 
+                $linfoObj->getUpTime()['text'], 
+                'Not Available'
+            );
+        }
+        
+        $systemOverviewData['system_overview_schema']['uptime_text'] = $uptimeText;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Last Booted Timestamp
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['last_booted_timestamp'] = 
+            Utils::getValIfTrueOrGetDefault(
+                $systemOverviewData['system_overview_schema']['uptime'] !== -1, 
+                (new DateTime())->getTimestamp() - $systemOverviewData['system_overview_schema']['uptime'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Web Server Software
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['web_software'] = 
+                        s3MVC_GetSuperGlobal('server', 'SERVER_SOFTWARE', 'Unknown');
+//$_SERVER['SERVER_SOFTWARE']
+s3MVC_DumpVar($systemOverviewData);
+        $lastBootedOn = '';
         
         // TODO: Add some common software version info to the section that requires
         //       users to be logged in. E.g php, mysql, apache, python, ruby & more

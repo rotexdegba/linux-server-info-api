@@ -28,7 +28,7 @@ class Utils {
         return static::getNullIfEmpty($val) !== null ? $val : $default;
     }
     
-    public static function getValIfTrueOrGetDefault(bool $expr, string $true_val, string $default_val='') {
+    public static function getValIfTrueOrGetDefault(bool $expr, $true_val, $default_val='') {
         
         return $expr ? $true_val : $default_val;
     }

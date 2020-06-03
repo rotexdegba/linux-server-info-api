@@ -4,11 +4,14 @@ namespace Lsia\Controllers;
 use DateTime;
 use Lsia\Utils;
 use DateInterval;
+use Ginfo\Info\Cpu as GinfoCpu;
+use Ginfo\Info\Memory as GinfoMemory;
 use Ginfo\Info\General as GinfoGeneral;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VersatileCollections\ArraysCollection;
+use VersatileCollections\NumericsCollection;
 
 /**
  * 
@@ -575,9 +578,314 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // Web Server Software
         ////////////////////////////////////////////////////////////////////////
         
+        //retrieve from $_SERVER['SERVER_SOFTWARE']
         $systemOverviewData['system_overview_schema']['web_software'] = 
-                        s3MVC_GetSuperGlobal('server', 'SERVER_SOFTWARE', 'Unknown');
-//$_SERVER['SERVER_SOFTWARE']
+            s3MVC_GetSuperGlobal('server', 'SERVER_SOFTWARE', 'Unknown');
+        
+        ////////////////////////////////////////////////////////////////////////
+        // PHP Version
+        ////////////////////////////////////////////////////////////////////////
+        $systemOverviewData['system_overview_schema']['php_version'] = \PHP_VERSION;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Virtualization
+        ////////////////////////////////////////////////////////////////////////
+        
+        // retrieve via linfo
+        $virtualization = is_array($linfoObj->getVirtualization()) 
+                        && isset($linfoObj->getVirtualization()['method'])
+                        ? $linfoObj->getVirtualization()['method'] : NULL;
+
+        if (Utils::getNullIfEmpty($virtualization) === null) {
+
+            // try to retrieve via ginfo
+            $virtualization = ($generalInfo instanceof GinfoGeneral) 
+                                ? Utils::getDefaultIfEmpty(
+                                    $generalInfo->getVirtualization(),
+                                    'Not Available'
+                                  ) 
+                                : 'Not Available';
+        }
+        
+        $systemOverviewData['system_overview_schema']['virtualization'] = $virtualization;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Free Ram (bytes)
+        ////////////////////////////////////////////////////////////////////////
+        
+        // retrieve via linfo
+        $freeRam = is_array($linfoObj->getRam()) 
+                        && isset($linfoObj->getRam()['free'])
+                        ? $linfoObj->getRam()['free'] : NULL;
+
+        if (Utils::getNullIfEmpty($freeRam) === null) {
+
+            // try to retrieve via ginfo
+            $freeRam = ($ginfoObj->getMemory() instanceof GinfoMemory) 
+                                ? Utils::getDefaultIfEmpty(
+                                    $ginfoObj->getMemory()->getFree(),
+                                    -1
+                                  ) 
+                                : -1;
+        }
+        
+        $systemOverviewData['system_overview_schema']['free_ram'] = (int)$freeRam;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Free Swap Memory (bytes)
+        ////////////////////////////////////////////////////////////////////////
+        
+        // retrieve via linfo
+        $freeSwapRam = is_array($linfoObj->getRam()) 
+                        && isset($linfoObj->getRam()['swapFree'])
+                        ? $linfoObj->getRam()['swapFree'] : NULL;
+
+        if (Utils::getNullIfEmpty($freeSwapRam) === null) {
+
+            // try to retrieve via ginfo
+            $freeSwapRam = ($ginfoObj->getMemory() instanceof GinfoMemory) 
+                                ? Utils::getDefaultIfEmpty(
+                                    $ginfoObj->getMemory()->getSwapFree(),
+                                    -1
+                                  ) 
+                                : -1;
+        }
+        
+        $systemOverviewData['system_overview_schema']['free_swap'] = (int)$freeSwapRam;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total Ram (bytes)
+        ////////////////////////////////////////////////////////////////////////
+
+        // retrieve via linfo
+        $totalRam = is_array($linfoObj->getRam()) 
+                        && isset($linfoObj->getRam()['total'])
+                        ? $linfoObj->getRam()['total'] : NULL;
+
+        if (Utils::getNullIfEmpty($totalRam) === null) {
+
+            // try to retrieve via ginfo or trntv/probe
+            $totalRam = ($ginfoObj->getMemory() instanceof GinfoMemory) 
+                                ? Utils::getDefaultIfEmpty(
+                                    $ginfoObj->getMemory()->getTotal(),
+                                        Utils::getDefaultIfEmpty(
+                                            $trntInfo->getTotalMem(),
+                                            -1
+                                        ) 
+                                  ) 
+                                : -1;
+        }
+        
+        $systemOverviewData['system_overview_schema']['total_ram'] = (int)$totalRam;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total Swap Memory (bytes)
+        ////////////////////////////////////////////////////////////////////////
+
+        // retrieve via linfo
+        $totalSwap = is_array($linfoObj->getRam()) 
+                        && isset($linfoObj->getRam()['swapTotal'])
+                        ? $linfoObj->getRam()['swapTotal'] : NULL;
+
+        if (Utils::getNullIfEmpty($totalSwap) === null) {
+
+            // try to retrieve via ginfo or trntv/probe
+            $totalSwap = ($ginfoObj->getMemory() instanceof GinfoMemory) 
+                                ? Utils::getDefaultIfEmpty(
+                                    $ginfoObj->getMemory()->getSwapTotal(),
+                                        Utils::getDefaultIfEmpty(
+                                            $trntInfo->getTotalSwap(),
+                                            -1
+                                        ) 
+                                  ) 
+                                : -1;
+        }
+        
+        $systemOverviewData['system_overview_schema']['total_swap'] = (int)$totalSwap;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Used Ram (bytes)
+        ////////////////////////////////////////////////////////////////////////
+        $systemOverviewData['system_overview_schema']['used_ram'] =
+            (int) Utils::getValIfTrueOrGetDefault(
+                ($systemOverviewData['system_overview_schema']['total_ram'] > -1) ,
+                $systemOverviewData['system_overview_schema']['total_ram'] 
+                - $systemOverviewData['system_overview_schema']['free_ram'],
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Used Swap Memory (bytes)
+        ////////////////////////////////////////////////////////////////////////
+        $systemOverviewData['system_overview_schema']['used_swap'] =
+            (int) Utils::getValIfTrueOrGetDefault(
+                ($systemOverviewData['system_overview_schema']['total_swap'] > -1) ,
+                $systemOverviewData['system_overview_schema']['total_swap'] 
+                - $systemOverviewData['system_overview_schema']['free_swap'],
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Overall CPU Usage %
+        ////////////////////////////////////////////////////////////////////////
+        
+        /** @var \VersatileCollections\CollectionInterface $cpuInfo **/
+        $cpuInfo =
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getCPU()),
+                ArraysCollection::makeNew($linfoObj->getCPU()),
+                ArraysCollection::makeNew() // empty collection
+            );
+        
+        // $cpuInfo should look like below:
+        //[
+        //    0 => [
+        //        'usage_percentage' => 2.06,
+        //        'Vendor' => 'GenuineIntel',
+        //        'Model' => 'Intel(R) Core(TM) i5-3570 CPU @ 3.40GHz',
+        //        'MHz' => '3392.314',
+        //    ],
+        //    .......
+        //    .......
+        //]
+        
+        $systemOverviewData['system_overview_schema']['overall_cpu_usage_percent'] =
+            $cpuInfo->column('usage_percentage') // extract usage_percentage values from each item in the collection
+                    ->getAsNewType(NumericsCollection::class) // create a numeric collection containing the usage_percentage values
+                    ->sum() / $cpuInfo->count(); // calculate the sum of all the usage_percentage values and divide by the number of items
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of Physical CPU Cores
+        ////////////////////////////////////////////////////////////////////////
+
+        // retrieve via ginfo
+        $totalNumPhysicalCpuCores = 
+            ($ginfoObj->getCpu() instanceof GinfoCpu) 
+                ? Utils::getDefaultIfEmpty(
+                    $ginfoObj->getCpu()->getCores(),
+                    NULL
+                  ) 
+                : NULL;
+
+        if (Utils::getNullIfEmpty($totalNumPhysicalCpuCores) === NULL) {
+
+            // try to retrieve via trntv/probe
+            $totalNumPhysicalCpuCores = Utils::getDefaultIfEmpty(
+                                            $trntInfo->getCpuPhysicalCores(),
+                                            -1
+                                        );
+        }
+        
+        $systemOverviewData['system_overview_schema']
+                           ['total_num_physical_cpu_cores'] = (int)$totalNumPhysicalCpuCores;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of Logical / Virtual Processors
+        ////////////////////////////////////////////////////////////////////////
+
+        // retrieve via linfo
+        $totalNumVirtualProcessors = is_array($linfoObj->getCPU()) 
+                                        ? count($linfoObj->getCPU()) : NULL;
+
+        if (Utils::getNullIfEmpty($totalNumVirtualProcessors) === NULL) {
+
+            // try to retrieve via ginfo or trntv/probe
+            $totalNumVirtualProcessors = 
+                ($ginfoObj->getCpu() instanceof GinfoCpu) 
+                    ? Utils::getDefaultIfEmpty(
+                        $ginfoObj->getCpu()->getVirtual(),
+                        Utils::getDefaultIfEmpty(
+                            $trntInfo->getCpuCores(),
+                            -1
+                        ) 
+                      ) 
+                    : -1;
+        }
+        
+        $systemOverviewData['system_overview_schema']
+                           ['total_num_virtual_or_logical_processors'] = (int)$totalNumVirtualProcessors;
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of processes
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['total_number_of_processes'] = 
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['proc_total']), 
+                (int)$linfoObj->getProcessStats()['proc_total'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of threads
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['total_number_of_threads'] = 
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['threads']), 
+                (int)$linfoObj->getProcessStats()['threads'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of running processes (linux only)
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['total_number_of_running_processes_linux'] = 
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
+                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['running']), 
+                (int)$linfoObj->getProcessStats()['totals']['running'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of sleeping processes (linux only)
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['total_number_of_sleeping_processes_linux'] = 
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
+                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['sleeping']), 
+                (int)$linfoObj->getProcessStats()['totals']['sleeping'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of stopped processes (linux only)
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['total_number_of_stopped_processes_linux'] = 
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
+                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['stopped']), 
+                (int)$linfoObj->getProcessStats()['totals']['stopped'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Total number of zombie processes (linux only)
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['total_number_of_zombie_processes_linux'] = 
+            Utils::getValIfTrueOrGetDefault(
+                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
+                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['zombie']), 
+                (int)$linfoObj->getProcessStats()['totals']['zombie'], 
+                -1
+            );
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Number of active users
+        ////////////////////////////////////////////////////////////////////////
+        
+        $systemOverviewData['system_overview_schema']['number_of_logged_in_users'] = 
+            Utils::getValIfTrueOrGetDefault(
+                ($generalInfo instanceof GinfoGeneral) && is_countable($generalInfo->getLoggedUsers()), 
+                count($generalInfo->getLoggedUsers()), 
+                -1
+            );
+
 s3MVC_DumpVar($systemOverviewData);
         $lastBootedOn = '';
         

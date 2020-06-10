@@ -444,7 +444,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     /******************************************************************/
     /******************************************************************/
     
-    protected function generateSystemOverviewData() {
+    protected function generateSystemOverviewData(): array {
         
         /** @var \Linfo\Linfo $linfo */
         $linfo = $this->container->get('linfo_server_info');
@@ -485,9 +485,9 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
             $kernelVersion = ($generalInfo instanceof GinfoGeneral) 
                 ? Utils::getDefaultIfEmpty(
                     $generalInfo->getKernel(),
-                    Utils::getDefaultIfEmpty(php_uname('r'), 'Not Available')
+                    Utils::getDefaultIfEmpty(php_uname('r'), '')
                   ) 
-                : Utils::getDefaultIfEmpty(php_uname('r'), 'Not Available');
+                : Utils::getDefaultIfEmpty(php_uname('r'), '');
         }
         
         $systemOverviewData['system_overview_schema']['kernel_version'] = $kernelVersion;
@@ -503,7 +503,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         if (Utils::getNullIfEmpty($distroName) === null) {
 
             // try to retrieve via trntv/probe
-            $distroName = Utils::getDefaultIfEmpty($trntInfo->getOsRelease(), 'Not Available');
+            $distroName = Utils::getDefaultIfEmpty($trntInfo->getOsRelease(), '');
         }
         
         $systemOverviewData['system_overview_schema']['distro_name'] = $distroName;
@@ -512,14 +512,14 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // Get Architecture
         ////////////////////////////////////////////////////////////////////////        
         $systemOverviewData['system_overview_schema']['architecture'] = 
-                    Utils::getDefaultIfEmpty(php_uname('m'), 'Not Available');
+                    Utils::getDefaultIfEmpty(php_uname('m'), '');
         
         ////////////////////////////////////////////////////////////////////////
         // Get System Model
         ////////////////////////////////////////////////////////////////////////        
         $systemOverviewData['system_overview_schema']['system_model'] = 
             ($generalInfo instanceof GinfoGeneral) 
-                ? Utils::getDefaultIfEmpty($generalInfo->getModel(), 'Not Available') : 'Not Available';
+                ? Utils::getDefaultIfEmpty($generalInfo->getModel(), '') : '';
         
         ////////////////////////////////////////////////////////////////////////
         // Get Uptime
@@ -557,7 +557,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
             $uptimeText = Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getUpTime()) && isset($linfoObj->getUpTime()['text']), 
                 $linfoObj->getUpTime()['text'], 
-                'Not Available'
+                ''
             );
         }
         
@@ -566,7 +566,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Last Booted Timestamp
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['last_booted_timestamp'] = 
             Utils::getValIfTrueOrGetDefault(
                 $systemOverviewData['system_overview_schema']['uptime'] !== -1, 
@@ -602,9 +601,9 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
             $virtualization = ($generalInfo instanceof GinfoGeneral) 
                                 ? Utils::getDefaultIfEmpty(
                                     $generalInfo->getVirtualization(),
-                                    'Not Available'
+                                    ''
                                   ) 
-                                : 'Not Available';
+                                : '';
         }
         
         $systemOverviewData['system_overview_schema']['virtualization'] = $virtualization;
@@ -629,7 +628,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                                 : -1;
         }
         
-        $systemOverviewData['system_overview_schema']['free_ram'] = (int)$freeRam;
+        $systemOverviewData['system_overview_schema']['free_ram_bytes'] = (int)$freeRam;
         
         ////////////////////////////////////////////////////////////////////////
         // Free Swap Memory (bytes)
@@ -651,7 +650,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                                 : -1;
         }
         
-        $systemOverviewData['system_overview_schema']['free_swap'] = (int)$freeSwapRam;
+        $systemOverviewData['system_overview_schema']['free_swap_bytes'] = (int)$freeSwapRam;
         
         ////////////////////////////////////////////////////////////////////////
         // Total Ram (bytes)
@@ -676,7 +675,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                                 : -1;
         }
         
-        $systemOverviewData['system_overview_schema']['total_ram'] = (int)$totalRam;
+        $systemOverviewData['system_overview_schema']['total_ram_bytes'] = (int)$totalRam;
         
         ////////////////////////////////////////////////////////////////////////
         // Total Swap Memory (bytes)
@@ -701,27 +700,27 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                                 : -1;
         }
         
-        $systemOverviewData['system_overview_schema']['total_swap'] = (int)$totalSwap;
+        $systemOverviewData['system_overview_schema']['total_swap_bytes'] = (int)$totalSwap;
         
         ////////////////////////////////////////////////////////////////////////
         // Used Ram (bytes)
         ////////////////////////////////////////////////////////////////////////
-        $systemOverviewData['system_overview_schema']['used_ram'] =
+        $systemOverviewData['system_overview_schema']['used_ram_bytes'] =
             (int) Utils::getValIfTrueOrGetDefault(
-                ($systemOverviewData['system_overview_schema']['total_ram'] > -1) ,
-                $systemOverviewData['system_overview_schema']['total_ram'] 
-                - $systemOverviewData['system_overview_schema']['free_ram'],
+                ($systemOverviewData['system_overview_schema']['total_ram_bytes'] > -1) ,
+                $systemOverviewData['system_overview_schema']['total_ram_bytes'] 
+                - $systemOverviewData['system_overview_schema']['free_ram_bytes'],
                 -1
             );
         
         ////////////////////////////////////////////////////////////////////////
         // Used Swap Memory (bytes)
         ////////////////////////////////////////////////////////////////////////
-        $systemOverviewData['system_overview_schema']['used_swap'] =
+        $systemOverviewData['system_overview_schema']['used_swap_bytes'] =
             (int) Utils::getValIfTrueOrGetDefault(
-                ($systemOverviewData['system_overview_schema']['total_swap'] > -1) ,
-                $systemOverviewData['system_overview_schema']['total_swap'] 
-                - $systemOverviewData['system_overview_schema']['free_swap'],
+                ($systemOverviewData['system_overview_schema']['total_swap_bytes'] > -1) ,
+                $systemOverviewData['system_overview_schema']['total_swap_bytes'] 
+                - $systemOverviewData['system_overview_schema']['free_swap_bytes'],
                 -1
             );
         
@@ -808,7 +807,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Total number of processes
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['total_number_of_processes'] = 
             Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['proc_total']), 
@@ -819,7 +817,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Total number of threads
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['total_number_of_threads'] = 
             Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['threads']), 
@@ -830,7 +827,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Total number of running processes (linux only)
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['total_number_of_running_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
@@ -842,7 +838,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Total number of sleeping processes (linux only)
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['total_number_of_sleeping_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
@@ -854,7 +849,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Total number of stopped processes (linux only)
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['total_number_of_stopped_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
@@ -866,7 +860,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Total number of zombie processes (linux only)
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['total_number_of_zombie_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
                 is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
@@ -878,77 +871,63 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // Number of active users
         ////////////////////////////////////////////////////////////////////////
-        
         $systemOverviewData['system_overview_schema']['number_of_logged_in_users'] = 
             Utils::getValIfTrueOrGetDefault(
                 ($generalInfo instanceof GinfoGeneral) && is_countable($generalInfo->getLoggedUsers()), 
                 count($generalInfo->getLoggedUsers()), 
                 -1
             );
-
-s3MVC_DumpVar($systemOverviewData);
-        $lastBootedOn = '';
         
-        // TODO: Add some common software version info to the section that requires
-        //       users to be logged in. E.g php, mysql, apache, python, ruby & more
-        $viewData = [
-            'distroNameAndVersion'  => [ 'label' => 'Distro Name and Version',  'value' => $generalInfo->getOsName() ],
-            'kernelVersion'         => [ 'label' => 'Kernel Version',           'value' => $generalInfo->getKernel() ],
-            'osFamily'              => [ 'label' => 'OS Family',                'value' => $linfoObj->getOS() ],
-            'architecture'          => [ 'label' => 'Architecture',             'value' => $generalInfo->getArchitecture() ],
-            'machineModel'          => [ 'label' => 'Machine Model',            'value' => Utils::getDefaultIfEmpty($generalInfo->getModel(), '') ],
-            'lastBootedOn'          => [ 'label' => 'Last booted on',           'value' => $lastBootedOn ],
-            'uptime'                => [ 'label' => 'Uptime',                   'value' => $uptime ],
-            'loggedInUsers'         => [ 'label' => 'Logged in users',          'value' => Utils::getValIfTrueOrGetDefault(is_countable($generalInfo->getLoggedUsers()), count($generalInfo->getLoggedUsers()), 'Unknown') ],
-            'processSummaryInfo'    => [],
-        ];
+        ////////////////////////////////////////////////////////////////////////
+        // CPU Info
+        ////////////////////////////////////////////////////////////////////////
+        $systemOverviewData['system_overview_schema']['cpu_info'] = $this->generateCpuInfoData();
+
+        return $systemOverviewData;
+    }
+    
+    protected function generateCpuInfoData(): array {
         
-        $processInfo = $linfoObj->getProcessStats();
-        $processInfoG = $ginfoObj->getProcesses();
-var_dump(count($processInfoG));
-//var_dump($processInfoG);
-s3MVC_DumpVar($processInfoG);
+        $cpuInfoData = [];
         
-        if( is_array($processInfo) ) {
-            
-            if(array_key_exists('proc_total', $processInfo)) {
-                
-                $viewData['processSummaryInfo'][] = 
-                    [ 'label' => 'Total Number of Processes', 'value' => $processInfo['proc_total'] ];
-            }
-            
-            if(array_key_exists('threads', $processInfo)) {
-                
-                $viewData['processSummaryInfo'][] = 
-                    [ 'label' => 'Total Number of Threads', 'value' => $processInfo['threads'] ];
-            }
-            
-            if(array_key_exists('totals', $processInfo) && is_array($processInfo['totals'])) {
-                
-                if(array_key_exists('running', $processInfo['totals'])) {
+        /** @var \Linfo\Linfo $linfo */
+        $linfo = $this->container->get('linfo_server_info');
+        
+        /** @var \Linfo\OS\OS $linfoObj */
+        $linfoObj = $linfo->getParser();
+        
+        $data = $linfoObj->getCPU();
 
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Running Processes', 'value' => $processInfo['totals']['running'] ];
-                }
-                
-                if(array_key_exists('sleeping', $processInfo['totals'])) {
+        if(Utils::isCountableWithData($data)) {
 
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Sleeping Processes', 'value' => $processInfo['totals']['sleeping'] ];
-                }
+            foreach($data as $cpuNumber=>$datum) {
                 
-                if(array_key_exists('stopped', $processInfo['totals'])) {
-
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Stopped Processes', 'value' => $processInfo['totals']['stopped'] ];
-                }
-                
-                if(array_key_exists('zombie', $processInfo['totals'])) {
-
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Zombie Processes', 'value' => $processInfo['totals']['zombie'] ];
-                }
-            }
-        } 
+                $cpuInfoData[] = [
+                    'cpu_number'        => $cpuNumber,
+                    'usage_percentage'  => Utils::getValIfTrueOrGetDefault(
+                                                isset($datum['usage_percentage']), 
+                                                (float)$datum['usage_percentage'], 
+                                                -1.0
+                                            ),
+                    'vendor'            => Utils::getValIfTrueOrGetDefault(
+                                                isset($datum['Vendor']), 
+                                                $datum['Vendor'], 
+                                                ''
+                                            ),
+                    'model'             => Utils::getValIfTrueOrGetDefault(
+                                                isset($datum['Model']), 
+                                                $datum['Model'], 
+                                                ''
+                                            ),
+                    'speed_mhz'         => Utils::getValIfTrueOrGetDefault(
+                                                isset($datum['MHz']), 
+                                                (float)$datum['MHz'], 
+                                                -1.0
+                                            ),
+                ];
+            } // foreach($data as $cpuNumber=>$datum)
+        } // if(Utils::isCountableWithData($data))
+        
+        return $cpuInfoData;
     }
 }

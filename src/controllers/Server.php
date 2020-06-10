@@ -54,95 +54,86 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionIndex() {
         
-$this->generateSystemOverviewData();
+        $systemOverviewData = $this->generateSystemOverviewData()['system_overview_schema'];
+//s3MVC_DumpVar($systemOverviewData);
+        // TODO: Add some common software version info to the section that requires
+        //       users to be logged in. E.g php, mysql, apache, python, ruby & more
+        $viewData = [
+            'hostName'              => [ 'label' => 'Host Name',                'value' => $systemOverviewData['host_name'] ],
+            'distroNameAndVersion'  => [ 'label' => 'Distro Name and Version',  'value' => $systemOverviewData['distro_name'] ],
+            'kernelVersion'         => [ 'label' => 'Kernel Version',           'value' => $systemOverviewData['kernel_version'] ],
+            'osFamily'              => [ 'label' => 'OS Family',                'value' => $systemOverviewData['os_family'] ],
+            'architecture'          => [ 'label' => 'Architecture',             'value' => $systemOverviewData['architecture'] ],
+            'machineModel'          => [ 'label' => 'Machine Model',            'value' => $systemOverviewData['system_model'] ],
+            'webSoftware'           => [ 'label' => 'Web Server Software',      'value' => $systemOverviewData['web_software'] ],
+            'phpVersion'            => [ 'label' => 'PHP Version',              'value' => $systemOverviewData['php_version'] ],
+            'virtualization'        => [ 'label' => 'Virtualization Technology','value' => $systemOverviewData['virtualization'] ],
+            
+            'totalRamBytes'         => [ 'label' => 'Ram Memory Usage',         'value' => $systemOverviewData['total_ram_bytes'] ],
+            'totalSwapBytes'        => [ 'label' => 'Swap Memory Usage',        'value' => $systemOverviewData['total_swap_bytes'] ],
+            'usedRamBytes'          => [ 'label' => 'Used Ram Memeory',         'value' => $systemOverviewData['used_ram_bytes'] ],
+            'usedSwapBytes'         => [ 'label' => 'Used Swap Memory',         'value' => $systemOverviewData['used_swap_bytes'] ],
+            
+            'overallCpuUsagePercent'=> [ 'label' => 'Overall CPU Percentage',   'value' => $systemOverviewData['overall_cpu_usage_percent'] ],
+            'totalNumPhyscCpuCores' => [ 'label' => 'Total Number of Physical CPU Cores',   'value' => $systemOverviewData['total_num_physical_cpu_cores'] ],
+            'totalNumVirtOrLogicalProcessors'=> [ 'label' => 'Total Number of Virtual / Logical Processors',   'value' => $systemOverviewData['total_num_virtual_or_logical_processors'] ],
+            
+            'lastBootedOn'          => [ 'label' => 'Last booted on',           'value' => (new DateTime())->setTimestamp($systemOverviewData['last_booted_timestamp'])->format('D, j M Y H:i:s T') ],
+            'uptime'                => [ 'label' => 'Uptime',                   'value' => $systemOverviewData['uptime_text'] ],
+            'loggedInUsers'         => [ 'label' => 'Logged in users',          'value' => Utils::getValIfTrueOrGetDefault($systemOverviewData['number_of_logged_in_users'] > -1, $systemOverviewData['number_of_logged_in_users'], 'Unknown') ],
+            'processSummaryInfo'    => [
+                                          [ 'label' => 'Total Number of Processes',             'value' => $systemOverviewData['total_number_of_processes'] ],
+                                          [ 'label' => 'Total Number of Threads',               'value' => $systemOverviewData['total_number_of_threads'] ],
+                                          [ 'label' => 'Total Number of Running Processes',     'value' => $systemOverviewData['total_number_of_running_processes_linux'] ],
+                                          [ 'label' => 'Total Number of Sleeping Processes',    'value' => $systemOverviewData['total_number_of_sleeping_processes_linux'] ],
+                                          [ 'label' => 'Total Number of Stopped Processes',     'value' => $systemOverviewData['total_number_of_stopped_processes_linux'] ],
+                                          [ 'label' => 'Total Number of Zombie Processes',      'value' => $systemOverviewData['total_number_of_zombie_processes_linux'] ]
+                                       ],
+            'cpuInfo'               => [],
+        ];
+        
+        // Add cpu info data
+        foreach ($systemOverviewData['cpu_info'] as $cpuInfo) {
+            
+            $viewData['cpuInfo'][] = [
+                'cpu_number'        => [ 'label' => 'CPU Core Number', 'value' => $cpuInfo['cpu_number'] ],
+                'usage_percentage'  => [ 'label' => 'Percent Usage',   'value' => $cpuInfo['usage_percentage'] ],
+                'vendor'            => [ 'label' => 'Vendor',          'value' => $cpuInfo['vendor'] ],
+                'model'             => [ 'label' => 'Model',           'value' => $cpuInfo['model'] ],
+                'speed_mhz'         => [ 'label' => 'Speed',           'value' => round($cpuInfo['speed_mhz']/1000, 2) . ' GHz' ]
+            ];
+        }
+        
         
         /** @var \Linfo\Linfo $linfo */
         $linfo = $this->container->get('linfo_server_info');
         
-        /** @var \Linfo\OS\Linux $osLinfoObj */
-        $osLinfoObj = $linfo->getParser();
+        /** @var \Linfo\OS\OS $linfoObj */
+        $linfoObj = $linfo->getParser();
         
         /** @var \Ginfo\Ginfo $ginfo */
         $ginfo = $this->container->get('ginfo_server_info');
-        $osGinfoObj = $ginfo->getInfo();
-        $generalInfo = $osGinfoObj->getGeneral();
-var_dump($ginfo->getOs()->getUptime());
-        $uptime = '';
-        $lastBootedOn = '';
+        $ginfoObj = $ginfo->getInfo();
         
-        if( $generalInfo->getUptime() instanceof DateInterval ) {
-            
-            $uptime = $generalInfo->getUptime()->format('%d days, %h hours, %i minutes, %s seconds');
-            $lastBootedOn = (new DateTime())->sub($generalInfo->getUptime())->format('D, j M Y H:i:s T');
-        }
-        
-        // TODO: Add some common software version info to the section that requires
-        //       users to be logged in. E.g php, mysql, apache, python, ruby & more
-        $viewData = [
-            'hostName'              => [ 'label' => 'Host Name',                'value' => $generalInfo->getHostname() ],
-            'distroNameAndVersion'  => [ 'label' => 'Distro Name and Version',  'value' => $generalInfo->getOsName() ],
-            'kernelVersion'         => [ 'label' => 'Kernel Version',           'value' => $generalInfo->getKernel() ],
-            'osFamily'              => [ 'label' => 'OS Family',                'value' => $osLinfoObj->getOS() ],
-            'architecture'          => [ 'label' => 'Architecture',             'value' => $generalInfo->getArchitecture() ],
-            'machineModel'          => [ 'label' => 'Machine Model',            'value' => Utils::getDefaultIfEmpty($generalInfo->getModel(), '') ],
-            'lastBootedOn'          => [ 'label' => 'Last booted on',           'value' => $lastBootedOn ],
-            'uptime'                => [ 'label' => 'Uptime',                   'value' => $uptime ],
-            'loggedInUsers'         => [ 'label' => 'Logged in users',          'value' => Utils::getValIfTrueOrGetDefault(is_countable($generalInfo->getLoggedUsers()), count($generalInfo->getLoggedUsers()), 'Unknown') ],
-            'processSummaryInfo'    => [],
-        ];
-        
-        $processInfo = $osLinfoObj->getProcessStats();
-        $processInfoG = $osGinfoObj->getProcesses();
+        $processInfo = $linfoObj->getProcessStats();
+        $processInfoG = $ginfoObj->getProcesses();
 var_dump(count($processInfoG));
 //var_dump($processInfoG);
 s3MVC_DumpVar($processInfoG);
-        
-        if( is_array($processInfo) ) {
-            
-            if(array_key_exists('proc_total', $processInfo)) {
-                
-                $viewData['processSummaryInfo'][] = 
-                    [ 'label' => 'Total Number of Processes', 'value' => $processInfo['proc_total'] ];
-            }
-            
-            if(array_key_exists('threads', $processInfo)) {
-                
-                $viewData['processSummaryInfo'][] = 
-                    [ 'label' => 'Total Number of Threads', 'value' => $processInfo['threads'] ];
-            }
-            
-            if(array_key_exists('totals', $processInfo) && is_array($processInfo['totals'])) {
-                
-                if(array_key_exists('running', $processInfo['totals'])) {
-
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Running Processes', 'value' => $processInfo['totals']['running'] ];
-                }
-                
-                if(array_key_exists('sleeping', $processInfo['totals'])) {
-
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Sleeping Processes', 'value' => $processInfo['totals']['sleeping'] ];
-                }
-                
-                if(array_key_exists('stopped', $processInfo['totals'])) {
-
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Stopped Processes', 'value' => $processInfo['totals']['stopped'] ];
-                }
-                
-                if(array_key_exists('zombie', $processInfo['totals'])) {
-
-                    $viewData['processSummaryInfo'][] = 
-                        [ 'label' => 'Total Number of Zombie Processes', 'value' => $processInfo['totals']['zombie'] ];
-                }
-            }
-        }
 
         //get the contents of the view first
         $view_str = $this->renderView('index.php', $viewData);
         
         return $this->renderLayout( $this->layout_template_file_name, ['content'=>$view_str] );
+    }
+    
+    public function actionServerOverview() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateSystemOverviewData()));
+        
+        return $response;
     }
     
     public function preAction() {

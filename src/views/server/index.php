@@ -1,8 +1,11 @@
+        <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.css'); ?>" media="screen,projection" />
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.js'); ?>"></script>   
+
                     <div id="server-index">
                         <div class="row pad-t-2-5-on-med-and-down">
                             <div class="col s12">
                                 <ul class="collection with-header">
-                                    <li class="collection-header"><h5>Server Summary</h5></li>
+                                    <li class="collection-header"><h4>Server Summary</h4></li>
                                     <li class="collection-item"> <strong><?= $hostName['label']; ?>:</strong> <?= $hostName['value']; ?> </li>
                                     <li class="collection-item"> <strong><?= $distroNameAndVersion['label']; ?>:</strong> <?= $distroNameAndVersion['value']; ?> </li>
                                     <li class="collection-item"> <strong><?= $kernelVersion['label']; ?>:</strong> <?= $kernelVersion['value']; ?> </li>
@@ -48,7 +51,7 @@
 
                                             <ul class="collection with-header">
 
-                                                <li class="collection-header"><h6>CPU Information</h6></li>
+                                                <li class="collection-header"><h5>CPU Information</h5></li>
                                                 
                                                 <li class="collection-item"> <strong><?= $overallCpuUsagePercent['label']; ?>:</strong> <?= round($overallCpuUsagePercent['value'], 2); ?> % </li>
                                                 <li class="collection-item"> <strong><?= $totalNumPhyscCpuCores['label']; ?>:</strong> <?= $totalNumPhyscCpuCores['value']; ?> </li>
@@ -99,22 +102,108 @@
                                     <li class="collection-item"> <strong><?= $lastBootedOn['label']; ?>:</strong> <?= $lastBootedOn['value']; ?> </li>
                                     <li class="collection-item"> <strong><?= $uptime['label']; ?>:</strong> <?= $uptime['value']; ?> </li>
                                     <li class="collection-item"> <strong><?= $loggedInUsers['label']; ?>:</strong> <?= $loggedInUsers['value']; ?> </li>
-                                    
+                                
+                                <?php if($__is_logged_in): ?>
                                     <li class="collection-item">
                                         
                                         <ul class="collection with-header">
                                             
-                                            <li class="collection-header"><h6>Process Information</h6></li>
+                                            <li class="collection-header"><h5>Process Information</h5></li>
                                             
                                             <?php foreach ($processSummaryInfo as $processInfo): ?>
                                             
                                                 <li class="collection-item"> <strong><?= $processInfo['label']; ?>:</strong> <?= $processInfo['value']; ?> </li>
                                                 
                                             <?php endforeach; ?>
+                                            
+                                            <?php if( count($processesInfo) > 0 ): ?>
                                                 
+                                                <li class="collection-item"> 
+
+                                                    <table id="processes-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Command Line</th>
+                                                                <th>Threads</th>
+                                                                <th>State</th>
+                                                                <th>Memory</th>
+                                                                <th>Peak Memory</th>
+                                                                <th>PID</th>
+                                                                <th>User</th>
+                                                                <th>Bytes Read</th>
+                                                                <th>Bytes Written</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($processesInfo as $processInfo): ?>
+                                                                <tr>
+                                                                    <td><?= $processInfo['name'] ?></td>
+                                                                    <td title="<?= $processInfo['command_line'] ?>">
+                                                                        <?= 
+                                                                            \Lsia\Utils::getValIfTrueOrGetDefault(
+                                                                                strlen($processInfo['command_line']) <= 20, 
+                                                                                $processInfo['command_line'], 
+                                                                                substr($processInfo['command_line'], 0, 20) . '....'
+                                                                            ) 
+                                                                        ?>
+                                                                    </td>
+                                                                    <td><?= $processInfo['num_threads'] ?></td>
+                                                                    <td><?= $processInfo['state'] ?></td>
+                                                                    <td><?= \Lsia\Utils::bytesToHumanReadable($processInfo['memory']) ?></td>
+                                                                    <td><?= \Lsia\Utils::bytesToHumanReadable($processInfo['peak_memory']) ?></td>
+                                                                    <td><?= $processInfo['pid'] ?></td>
+                                                                    <td><?= $processInfo['user'] ?></td>
+                                                                    <td><?= $processInfo['io_bytes_read'] ?></td>
+                                                                    <td><?= $processInfo['io_bytes_written'] ?></td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
                                         </ul>
                                     </li>
                                     
+                                    <li class="collection-item">
+                                        
+                                        <ul class="collection with-header">
+                                            
+                                            <li class="collection-header"><h5>Service Information</h5></li>
+                                                                                        
+                                            <?php if( count($servicesInfo) > 0 ): ?>
+                                                
+                                                <li class="collection-item"> 
+
+                                                    <table id="services-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Description</th>
+                                                                <th>Loaded</th>
+                                                                <th>Started</th>
+                                                                <th>State</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($servicesInfo as $serviceInfo): ?>
+                                                                <tr>
+                                                                    <td><?= $serviceInfo['name'] ?></td>
+                                                                    <td><?= $serviceInfo['description'] ?></td>
+                                                                    <td><?= $serviceInfo['loaded'] ?></td>
+                                                                    <td><?= $serviceInfo['started'] ?></td>
+                                                                    <td><?= $serviceInfo['state'] ?></td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </li>
+                                <?php endif; //$__is_logged_in ?>    
                                 </ul>
                             </div>
                         </div>
@@ -127,3 +216,15 @@
                             </div>
                         <?php endif; ?>
                     </div>
+
+                    <script>
+                        $(document).ready(function () {
+                            
+                            <?php if($__is_logged_in): ?>
+                                $('#processes-table').DataTable({"lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                $('#services-table').DataTable({"lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                 $('select').formSelect();
+                            <?php endif; ?>
+                                
+                        });
+                    </script>

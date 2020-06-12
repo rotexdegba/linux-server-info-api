@@ -650,7 +650,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         
         // retrieve via linfo
-        $virtualization = is_array($linfoObj->getVirtualization()) 
+        $virtualization = method_exists($linfoObj, 'getVirtualization')
+                        && is_array($linfoObj->getVirtualization()) 
                         && isset($linfoObj->getVirtualization()['method'])
                         ? $linfoObj->getVirtualization()['method'] : NULL;
 

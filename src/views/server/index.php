@@ -223,7 +223,7 @@
                             <?php if($__is_logged_in): ?>
                                 $('#processes-table').DataTable({"lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#services-table').DataTable({"lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
-                                 $('select').formSelect();
+                                $('select').formSelect();
                             <?php endif; ?>
                                 
                         });

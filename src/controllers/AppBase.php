@@ -444,6 +444,65 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     /******************************************************************/
     /******************************************************************/
     
+    protected function generateProcessData(): array {
+
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        $processDataToReturn = [];
+        
+        $processData = $ginfoObj->getProcesses();
+        
+        if( Utils::isCountableWithData($processData) ) {
+            
+            /** @var \Ginfo\Info\Process $processDatum */
+            foreach($processData as $processDatum) {
+                
+                $processDataToReturn[] = [
+                    'name'              => Utils::getDefaultIfEmpty($processDatum->getName(), ''),
+                    'command_line'      => Utils::getDefaultIfEmpty($processDatum->getCommandLine(), ''),
+                    'num_threads'       => Utils::getDefaultIfEmpty($processDatum->getThreads(), -1),
+                    'state'             => Utils::getDefaultIfEmpty($processDatum->getState(), ''),
+                    'memory'            => Utils::getDefaultIfEmpty($processDatum->getMemory(), -1.0),
+                    'peak_memory'       => Utils::getDefaultIfEmpty($processDatum->getPeakMemory(), -1.0),
+                    'pid'               => Utils::getDefaultIfEmpty($processDatum->getPid(), -1),
+                    'user'              => Utils::getDefaultIfEmpty($processDatum->getUser(), ''),
+                    'io_bytes_read'     => Utils::getDefaultIfEmpty($processDatum->getIoRead(), -1.0),
+                    'io_bytes_written'  => Utils::getDefaultIfEmpty($processDatum->getIoWrite(), -1.0),
+                ];
+            }
+        }
+        
+        return $processDataToReturn;
+    }
+    
+    protected function generateServicesData(): array {
+
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        $servicesDataToReturn = [];
+        
+        $servicesData = $ginfoObj->getServices();
+        
+        if( Utils::isCountableWithData($servicesData) ) {
+            
+            /** @var \Ginfo\Info\Service $serviceDatum */
+            foreach($servicesData as $serviceDatum) {
+                
+                $servicesDataToReturn[] = [
+                    'name'         => Utils::getDefaultIfEmpty($serviceDatum->getName(), ''),
+                    'description'  => Utils::getDefaultIfEmpty($serviceDatum->getDescription(), ''),
+                    'loaded'       => Utils::getValIfTrueOrGetDefault($serviceDatum->isLoaded(), 1, 0),
+                    'started'      => Utils::getValIfTrueOrGetDefault($serviceDatum->isStarted(), 1, 0),
+                    'state'        => Utils::getDefaultIfEmpty($serviceDatum->getState(), ''),
+                ];
+            }
+        }
+        
+        return $servicesDataToReturn;
+    }
+    
     protected function generateSystemOverviewData(): array {
         
         /** @var \Linfo\Linfo $linfo */

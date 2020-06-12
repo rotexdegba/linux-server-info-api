@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use VersatileCollections\ObjectsCollection;
 use VersatileCollections\GenericCollection;
 use VersatileCollections\StringsCollection;
+use VersatileCollections\MultiSortParameters;
 
 /**
  * 
@@ -56,8 +57,7 @@ class Server extends \Lsia\Controllers\AppBase
         
         $systemOverviewData = $this->generateSystemOverviewData()['system_overview_schema'];
 //s3MVC_DumpVar($systemOverviewData);
-        // TODO: Add some common software version info to the section that requires
-        //       users to be logged in. E.g php, mysql, apache, python, ruby & more
+
         $viewData = [
             'hostName'              => [ 'label' => 'Host Name',                'value' => $systemOverviewData['host_name'] ],
             'distroNameAndVersion'  => [ 'label' => 'Distro Name and Version',  'value' => $systemOverviewData['distro_name'] ],
@@ -90,6 +90,26 @@ class Server extends \Lsia\Controllers\AppBase
                                           [ 'label' => 'Total Number of Zombie Processes',      'value' => $systemOverviewData['total_number_of_zombie_processes_linux'] ]
                                        ],
             'cpuInfo'               => [],
+            'processesInfo'         => \VersatileCollections\ArraysCollection::makeNew($this->generateProcessData())
+                                            ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
+                                            ->transform(function($key, $val) {
+                                                
+                                                $val['memory'] = $val['memory'] < 0 ? 0 : $val['memory'];
+                                                $val['peak_memory'] = $val['peak_memory'] < 0 ? 0 : $val['peak_memory'];
+                                                $val['io_bytes_read'] = $val['io_bytes_read'] < 0 ? 0 : $val['io_bytes_read'];
+                                                $val['io_bytes_written'] = $val['io_bytes_written'] < 0 ? 0 : $val['io_bytes_written'];
+                                                
+                                                return $val;
+                                            }),
+            'servicesInfo'              => \VersatileCollections\ArraysCollection::makeNew($this->generateServicesData())
+                                            ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
+                                            ->transform(function($key, $val) {
+                                                
+                                                $val['loaded'] = $val['loaded'] ? 'Yes' : 'No';
+                                                $val['started'] = $val['started'] ? 'Yes' : 'No';
+                                                
+                                                return $val;
+                                            }),
         ];
         
         // Add cpu info data
@@ -104,23 +124,6 @@ class Server extends \Lsia\Controllers\AppBase
             ];
         }
         
-        
-        /** @var \Linfo\Linfo $linfo */
-        $linfo = $this->container->get('linfo_server_info');
-        
-        /** @var \Linfo\OS\OS $linfoObj */
-        $linfoObj = $linfo->getParser();
-        
-        /** @var \Ginfo\Ginfo $ginfo */
-        $ginfo = $this->container->get('ginfo_server_info');
-        $ginfoObj = $ginfo->getInfo();
-        
-        $processInfo = $linfoObj->getProcessStats();
-        $processInfoG = $ginfoObj->getProcesses();
-var_dump(count($processInfoG));
-//var_dump($processInfoG);
-s3MVC_DumpVar($processInfoG);
-
         //get the contents of the view first
         $view_str = $this->renderView('index.php', $viewData);
         
@@ -132,6 +135,24 @@ s3MVC_DumpVar($processInfoG);
         $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()->write(json_encode($this->generateSystemOverviewData()));
+        
+        return $response;
+    }
+    
+    public function actionProcesses() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateProcessData()));
+        
+        return $response;
+    }
+    
+    public function actionServices() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateServicesData()));
         
         return $response;
     }

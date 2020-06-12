@@ -939,11 +939,13 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // Number of active users
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['number_of_logged_in_users'] = 
-            Utils::getValIfTrueOrGetDefault(
-                ($generalInfo instanceof GinfoGeneral) && is_countable($generalInfo->getLoggedUsers()), 
-                count($generalInfo->getLoggedUsers()), 
+            
+                ($generalInfo instanceof GinfoGeneral) && is_countable($generalInfo->getLoggedUsers())
+                ?
+                count($generalInfo->getLoggedUsers())
+                :
                 -1
-            );
+            ;
         
         ////////////////////////////////////////////////////////////////////////
         // CPU Info

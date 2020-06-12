@@ -889,8 +889,9 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['total_number_of_running_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
-                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['running']), 
+                is_array($linfoObj->getProcessStats()) && array_key_exists('totals', $linfoObj->getProcessStats())
+                && is_array($linfoObj->getProcessStats()['totals']) && array_key_exists('running', $linfoObj->getProcessStats()['totals']),
+                    
                 (int)$linfoObj->getProcessStats()['totals']['running'], 
                 -1
             );
@@ -899,9 +900,11 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // Total number of sleeping processes (linux only)
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['total_number_of_sleeping_processes_linux'] = 
-            Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
-                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['sleeping']), 
+            Utils::getValIfTrueOrGetDefault( 
+                    
+                is_array($linfoObj->getProcessStats()) && array_key_exists('totals', $linfoObj->getProcessStats())
+                && is_array($linfoObj->getProcessStats()['totals']) && array_key_exists('sleeping', $linfoObj->getProcessStats()['totals']),
+                    
                 (int)$linfoObj->getProcessStats()['totals']['sleeping'], 
                 -1
             );
@@ -911,8 +914,9 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['total_number_of_stopped_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
-                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['stopped']), 
+                is_array($linfoObj->getProcessStats()) && array_key_exists('totals', $linfoObj->getProcessStats())
+                && is_array($linfoObj->getProcessStats()['totals']) && array_key_exists('stopped', $linfoObj->getProcessStats()['totals']),
+                    
                 (int)$linfoObj->getProcessStats()['totals']['stopped'], 
                 -1
             );
@@ -922,8 +926,9 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['total_number_of_zombie_processes_linux'] = 
             Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['totals'])
-                && is_array($linfoObj->getProcessStats()['totals']) && isset($linfoObj->getProcessStats()['totals']['zombie']), 
+                is_array($linfoObj->getProcessStats()) && array_key_exists('totals', $linfoObj->getProcessStats())
+                && is_array($linfoObj->getProcessStats()['totals']) && array_key_exists('zombie', $linfoObj->getProcessStats()['totals']),
+                    
                 (int)$linfoObj->getProcessStats()['totals']['zombie'], 
                 -1
             );

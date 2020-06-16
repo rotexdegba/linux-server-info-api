@@ -7,6 +7,7 @@ use DateInterval;
 use Ginfo\Info\Cpu as GinfoCpu;
 use Ginfo\Info\Memory as GinfoMemory;
 use Ginfo\Info\General as GinfoGeneral;
+use Ginfo\Info\Selinux as GinfoSelinux;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -951,6 +952,22 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // CPU Info
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['cpu_info'] = $this->generateCpuInfoData();
+        
+        ////////////////////////////////////////////////////////////////////////
+        // Selinux Info
+        ////////////////////////////////////////////////////////////////////////
+        $systemOverviewData['system_overview_schema']['selinux_enabled'] = -1;
+        $systemOverviewData['system_overview_schema']['selinux_mode'] = '';
+        $systemOverviewData['system_overview_schema']['selinux_policy'] = '';
+        
+        $gInfoSelinuxObj = $ginfoObj->getSelinux();
+
+        if( $gInfoSelinuxObj instanceof GinfoSelinux ) {
+            
+            $systemOverviewData['system_overview_schema']['selinux_enabled'] = (int)$gInfoSelinuxObj->isEnabled();
+            $systemOverviewData['system_overview_schema']['selinux_mode'] = $gInfoSelinuxObj->getMode();
+            $systemOverviewData['system_overview_schema']['selinux_policy'] = $gInfoSelinuxObj->getPolicy();
+        }
 
         return $systemOverviewData;
     }

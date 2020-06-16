@@ -102,7 +102,13 @@
                                     <li class="collection-item"> <strong><?= $lastBootedOn['label']; ?>:</strong> <?= $lastBootedOn['value']; ?> </li>
                                     <li class="collection-item"> <strong><?= $uptime['label']; ?>:</strong> <?= $uptime['value']; ?> </li>
                                     <li class="collection-item"> <strong><?= $loggedInUsers['label']; ?>:</strong> <?= $loggedInUsers['value']; ?> </li>
-                                
+                                    
+                                    <?php if($selinuxEnabled['value'] !== -1): ?>
+                                        <li class="collection-item"> <strong><?= $selinuxEnabled['label']; ?>:</strong> <?= $selinuxEnabled['value'] ? 'Yes' : 'No'; ?> </li>
+                                        <li class="collection-item"> <strong><?= $selinuxMode['label']; ?>:</strong> <?= $selinuxMode['value']; ?> </li>
+                                        <li class="collection-item"> <strong><?= $selinuxPolicy['label']; ?>:</strong> <?= $selinuxPolicy['value']; ?> </li>
+                                    <?php endif; ?>
+                                        
                                 <?php if($__is_logged_in): ?>
                                     <li class="collection-item">
                                         

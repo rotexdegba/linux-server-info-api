@@ -69,6 +69,10 @@ class Server extends \Lsia\Controllers\AppBase
             'phpVersion'            => [ 'label' => 'PHP Version',              'value' => $systemOverviewData['php_version'] ],
             'virtualization'        => [ 'label' => 'Virtualization Technology','value' => $systemOverviewData['virtualization'] ],
             
+            'selinuxEnabled'        => [ 'label' => 'Selinux Enabled',          'value' => $systemOverviewData['selinux_enabled'] ],
+            'selinuxMode'           => [ 'label' => 'Selinux Mode',             'value' => $systemOverviewData['selinux_mode'] ],
+            'selinuxPolicy'         => [ 'label' => 'Selinux Policy',           'value' => $systemOverviewData['selinux_policy'] ],
+            
             'totalRamBytes'         => [ 'label' => 'Ram Memory Usage',         'value' => $systemOverviewData['total_ram_bytes'] ],
             'totalSwapBytes'        => [ 'label' => 'Swap Memory Usage',        'value' => $systemOverviewData['total_swap_bytes'] ],
             'usedRamBytes'          => [ 'label' => 'Used Ram Memeory',         'value' => $systemOverviewData['used_ram_bytes'] ],

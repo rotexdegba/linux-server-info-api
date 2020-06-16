@@ -1,7 +1,7 @@
 <?php
 use Ginfo\Common;
 use Ginfo\Info\Cpu;
-use Ginfo\Info\Cpu\Processor;
+use Ginfo\Info\Selinux;
 
 class ExtendedLinux extends \Ginfo\OS\Linux {
     
@@ -71,5 +71,37 @@ class ExtendedLinux extends \Ginfo\OS\Linux {
 
                 return $out;
             })());
+    }
+    
+    /**
+     * Had to override this method because the parent method which uses
+     * Symfony\Component\Process\Process under the hood to run the sestatus
+     * command was returning NULL on a system with selinux enabled. This version
+     * uses shell_exec to run the sestatus command and it now works as expected.
+     * 
+     * @return Selinux|null
+     */
+    public function getSelinux(): ?\Ginfo\Info\Selinux {
+        
+        $sestatusCommandExists = shell_exec('command -v sestatus') !== NULL;
+        $commandResult = '';
+
+        if ($sestatusCommandExists) {
+            
+            $commandResult = shell_exec('sestatus');
+            
+            if($commandResult === NULL) {
+            
+                return null;
+            }
+        }
+
+        $result = \trim($commandResult);
+        $block = Common::parseKeyValueBlock($result);
+        
+        return (new Selinux())
+            ->setEnabled('enabled' === $block['SELinux status'])
+            ->setPolicy($block['Loaded policy name'] ?? null)
+            ->setMode($block['Current mode'] ?? null);
     }
 }

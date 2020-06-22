@@ -143,6 +143,15 @@ class Server extends \Lsia\Controllers\AppBase
         return $response;
     }
     
+    public function actionNetworkInfo() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateNetworkInfoData()));
+        
+        return $response;
+    }
+    
     public function actionProcesses() {
 
         $response = $this->response->withHeader('Content-type', 'application/json');

@@ -1016,4 +1016,100 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         
         return $cpuInfoData;
     }
+    
+    protected function generateNetworkInfoData() : array {
+        
+        $networkInfoData = [];
+        
+        /** @var \Linfo\Linfo $linfo */
+        $linfo = $this->container->get('linfo_server_info');
+        
+        /** @var \Linfo\OS\OS $linfoObj */
+        $linfoObj = $linfo->getParser();
+        
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        
+        $ginfoNetworkData = $ginfoObj->getNetwork();
+        $linfoNetworkData = method_exists($linfoObj, 'getNet') ? $linfoObj->getNet() : [];
+
+        $getDataFromLinfoNetworkData = function(string $networkIfaceName, string $attributeName, $defaultVal='') use ($linfoNetworkData) {
+            
+            return (
+                    is_array($linfoNetworkData) 
+                    && array_key_exists($networkIfaceName, $linfoNetworkData)
+                    && is_array($linfoNetworkData[$networkIfaceName])
+                    && array_key_exists($attributeName, $linfoNetworkData[$networkIfaceName])
+                   )
+                    ?
+                    $linfoNetworkData[$networkIfaceName][$attributeName]
+                    :
+                    $defaultVal
+                    ;
+        };
+
+        if( Utils::isCountableWithData($ginfoNetworkData) ) {
+            
+            /** @var \Ginfo\Info\Network $gNeworkDatum */
+            foreach ($ginfoNetworkData as $gNeworkDatum) {
+                
+                $networkInfoData[] = [
+                    'name'                  => $gNeworkDatum->getName(),
+                    // linfo returns Mbits/s while ginfo returns bits/s, 
+                    // we want bits/s so no need to convert here
+                    'speed_bits_per_second' => is_null($gNeworkDatum->getSpeed()) ? -1 : $gNeworkDatum->getSpeed(),
+                    'type'                  => Utils::getDefaultIfEmpty($gNeworkDatum->getType(), 'unknown'),
+                    'state'                 => Utils::getDefaultIfEmpty($gNeworkDatum->getState(), 'unknown'),
+                    
+                    'num_bytes_received'    => is_null($gNeworkDatum->getStatsReceived()) ? -1 : $gNeworkDatum->getStatsReceived()->getBytes(),
+                    'num_received_errors'   => is_null($gNeworkDatum->getStatsReceived()) ? -1 : $gNeworkDatum->getStatsReceived()->getErrors(),
+                    'num_received_packets'  => is_null($gNeworkDatum->getStatsReceived()) ? -1 : $gNeworkDatum->getStatsReceived()->getPackets(),
+                    
+                    'num_bytes_sent'        => is_null($gNeworkDatum->getStatsSent()) ? -1 : $gNeworkDatum->getStatsSent()->getBytes(),
+                    'num_sent_errors'       => is_null($gNeworkDatum->getStatsSent()) ? -1 : $gNeworkDatum->getStatsSent()->getErrors(),
+                    'num_sent_packets'      => is_null($gNeworkDatum->getStatsSent()) ? -1 : $gNeworkDatum->getStatsSent()->getPackets(),
+                    
+                    'gateway'               => $getDataFromLinfoNetworkData($gNeworkDatum->getName(), 'gateway', ''),
+                    'ipv4'                  => $getDataFromLinfoNetworkData($gNeworkDatum->getName(), 'ipv4', ''),
+                    'mac'                   => $getDataFromLinfoNetworkData($gNeworkDatum->getName(), 'mac', ''),
+                ];
+            }
+            
+        } elseif ( Utils::isCountableWithData($linfoNetworkData) ) {
+            
+            foreach ($linfoNetworkData as $ifaceName => $lNeworkDatum) {
+
+                $portSpeed = $getDataFromLinfoNetworkData($ifaceName, 'port_speed', -1);
+
+                if( !is_numeric($portSpeed) ) {
+
+                    $portSpeed = -1;
+                }
+
+                $networkInfoData[] = [
+                    'name'                  => $ifaceName,
+                    // linfo returns Mbits/s while ginfo returns bits/s
+                    // so convert from Mbits/s to bits/s if necessary
+                    'speed_bits_per_second' => ($portSpeed === -1) ? $portSpeed : ((float)$portSpeed) * 1000000,
+                    'type'                  => $getDataFromLinfoNetworkData($ifaceName, 'type', 'unknown'),
+                    'state'                 => $getDataFromLinfoNetworkData($ifaceName, 'state', 'unknown'),
+
+                    'num_bytes_received'    => (int)Utils::arrayGet($getDataFromLinfoNetworkData($ifaceName, 'recieved', []), 'bytes', -1),
+                    'num_received_errors'   => (int)Utils::arrayGet($getDataFromLinfoNetworkData($ifaceName, 'recieved', []), 'errors', -1),
+                    'num_received_packets'  => (int)Utils::arrayGet($getDataFromLinfoNetworkData($ifaceName, 'recieved', []), 'packets', -1),
+
+                    'num_bytes_sent'        => (int)Utils::arrayGet($getDataFromLinfoNetworkData($ifaceName, 'sent', []), 'bytes', -1),
+                    'num_sent_errors'       => (int)Utils::arrayGet($getDataFromLinfoNetworkData($ifaceName, 'sent', []), 'errors', -1),
+                    'num_sent_packets'      => (int)Utils::arrayGet($getDataFromLinfoNetworkData($ifaceName, 'sent', []), 'packets', -1),
+
+                    'gateway'               => $getDataFromLinfoNetworkData($ifaceName, 'gateway', ''),
+                    'ipv4'                  => $getDataFromLinfoNetworkData($ifaceName, 'ipv4', ''),
+                    'mac'                   => $getDataFromLinfoNetworkData($ifaceName, 'mac', ''),
+                ];
+            }
+        }
+        
+        return $networkInfoData;
+    }
 }

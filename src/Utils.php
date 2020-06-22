@@ -9,6 +9,13 @@ namespace Lsia;
  * 
  */
 class Utils {
+    
+    public static function arrayGet($potentialArray, string $key, $defaultVal='') {
+        
+        return (is_array($potentialArray) && array_key_exists($key, $potentialArray))
+                ? $potentialArray[$key]
+                : $defaultVal;
+    }
 
     public static function getNullIfEmpty($val, bool $treatEmptyArrayAsEmpty=true) {
         

@@ -35,9 +35,21 @@ class Utils {
         return static::getNullIfEmpty($val) !== null ? $val : $default;
     }
     
-    public static function getValIfTrueOrGetDefault(bool $expr, $true_val, $default_val='') {
+    /**
+     * 
+     * @param bool $expr an expression to evaluate
+     * @param mixed $trueVal Value to be returned if $expr is true
+     *                      WARNING: This method may generate a Notice, Warning or Exception if $trueVal in some situations
+     *                      FOR example if $expr is array_key_exists('aKey', $arr) and you pass $arr['aKey'] as $trueVal
+     *                      then a Notice, Warning or Exception will be emitted when array_key_exists('aKey', $arr) === false
+     * 
+     * @param mixed $defaultVal Value to be returned if $expr is false
+     * 
+     * @return mixed
+     */
+    public static function getValIfTrueOrGetDefault(bool $expr, $trueVal, $defaultVal='') {
         
-        return $expr ? $true_val : $default_val;
+        return $expr ? $trueVal : $defaultVal;
     }
     
     public static function bytesToHumanReadable($bytes, $decimalPlaces = 2) {

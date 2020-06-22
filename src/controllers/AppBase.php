@@ -614,11 +614,13 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         if ( Utils::getNullIfEmpty($uptimeText) === null ) {
 
             // try to retrieve via linfo
-            $uptimeText = Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getUpTime()) && isset($linfoObj->getUpTime()['text']), 
-                $linfoObj->getUpTime()['text'], 
-                ''
-            );
+            $uptimeText = 
+                (
+                    is_array($linfoObj->getUpTime()) 
+                    && array_key_exists('text', $linfoObj->getUpTime())
+                )
+                ? $linfoObj->getUpTime()['text']
+                : '';
         }
         
         $systemOverviewData['system_overview_schema']['uptime_text'] = $uptimeText;
@@ -790,12 +792,9 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         
         /** @var \VersatileCollections\CollectionInterface $cpuInfo **/
-        $cpuInfo =
-            Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getCPU()),
-                ArraysCollection::makeNew($linfoObj->getCPU()),
-                ArraysCollection::makeNew() // empty collection
-            );
+        $cpuInfo = is_array($linfoObj->getCPU())
+                    ? ArraysCollection::makeNew($linfoObj->getCPU())
+                    : ArraysCollection::makeNew();
         
         // $cpuInfo should look like below:
         //[
@@ -869,21 +868,23 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // Total number of processes
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['total_number_of_processes'] = 
-            Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['proc_total']), 
-                (int)$linfoObj->getProcessStats()['proc_total'], 
-                -1
-            );
+            (
+                is_array($linfoObj->getProcessStats()) 
+                && array_key_exists('proc_total', $linfoObj->getProcessStats())
+            )
+            ? (int)$linfoObj->getProcessStats()['proc_total'] 
+            : -1;
         
         ////////////////////////////////////////////////////////////////////////
         // Total number of threads
         ////////////////////////////////////////////////////////////////////////
         $systemOverviewData['system_overview_schema']['total_number_of_threads'] = 
-            Utils::getValIfTrueOrGetDefault(
-                is_array($linfoObj->getProcessStats()) && isset($linfoObj->getProcessStats()['threads']), 
-                (int)$linfoObj->getProcessStats()['threads'], 
-                -1
-            );
+            (
+                is_array($linfoObj->getProcessStats()) 
+                && array_key_exists('threads', $linfoObj->getProcessStats())
+            )
+            ? (int)$linfoObj->getProcessStats()['threads'] 
+            :-1;
         
         ////////////////////////////////////////////////////////////////////////
         // Total number of running processes (linux only)
@@ -989,26 +990,26 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
             foreach($data as $cpuNumber=>$datum) {
                 
                 $cpuInfoData[] = [
-                    'cpu_number'        => $cpuNumber,
-                    'usage_percentage'  => Utils::getValIfTrueOrGetDefault(
-                                                isset($datum['usage_percentage']), 
-                                                (float)$datum['usage_percentage'], 
-                                                -1.0
+                    'cpu_number'        =>  $cpuNumber,
+                    'usage_percentage'  =>  (
+                                                array_key_exists('usage_percentage', $datum)
+                                                ? (float)$datum['usage_percentage']
+                                                : -1.0
                                             ),
-                    'vendor'            => Utils::getValIfTrueOrGetDefault(
-                                                isset($datum['Vendor']), 
-                                                $datum['Vendor'], 
-                                                ''
+                    'vendor'            =>  (
+                                                array_key_exists('Vendor', $datum) 
+                                                ? $datum['Vendor']
+                                                :''
                                             ),
-                    'model'             => Utils::getValIfTrueOrGetDefault(
-                                                isset($datum['Model']), 
-                                                $datum['Model'], 
-                                                ''
+                    'model'             =>  (
+                                                array_key_exists('Model', $datum)
+                                                ? $datum['Model']
+                                                : ''
                                             ),
-                    'speed_mhz'         => Utils::getValIfTrueOrGetDefault(
-                                                isset($datum['MHz']), 
-                                                (float)$datum['MHz'], 
-                                                -1.0
+                    'speed_mhz'         =>  (
+                                                array_key_exists('MHz', $datum)
+                                                ? (float)$datum['MHz']
+                                                : -1.0
                                             ),
                 ];
             } // foreach($data as $cpuNumber=>$datum)

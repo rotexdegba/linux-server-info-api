@@ -94,6 +94,9 @@ class Server extends \Lsia\Controllers\AppBase
                                           [ 'label' => 'Total Number of Zombie Processes',      'value' => $systemOverviewData['total_number_of_zombie_processes_linux'] ]
                                        ],
             'cpuInfo'               => [],
+            'networkInfo'           => \VersatileCollections\ArraysCollection::makeNew($this->generateNetworkInfoData())
+                                            ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
+                                            ,
             'processesInfo'         => \VersatileCollections\ArraysCollection::makeNew($this->generateProcessData())
                                             ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
                                             ->transform(function($key, $val) {

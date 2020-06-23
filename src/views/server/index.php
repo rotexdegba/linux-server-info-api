@@ -1,5 +1,9 @@
+        
         <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.css'); ?>" media="screen,projection" />
-        <script type="text/javascript" src="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.js'); ?>"></script>   
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.js'); ?>"></script> 
+
+        <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/datatables/responsive.dataTables.min.css'); ?>" media="screen,projection" />
+        <script type="text/javascript" src="<?= s3MVC_MakeLink('/datatables/dataTables.responsive.min.js'); ?>"></script>   
 
                     <div id="server-index">
                         <div class="row pad-t-2-5-on-med-and-down">
@@ -110,6 +114,51 @@
                                     <?php endif; ?>
                                         
                                 <?php if($__is_logged_in): ?>
+                                        
+                                    <li class="collection-item">
+                                        
+                                        <ul class="collection with-header">
+                                            
+                                            <li class="collection-header"><h5>Network Devices</h5></li>
+                                                                                        
+                                            <?php if( count($networkInfo) > 0 ): ?>
+                                                
+                                                <li class="collection-item"> 
+
+                                                    <table id="network-devices-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Type</th>
+                                                                <th>State</th>
+                                                                <th>Port Speed</th>
+                                                                <th>Bytes Received</th>
+                                                                <th>Bytes Sent</th>
+                                                                <th>Packets Received</th>
+                                                                <th>Packets Sent</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($networkInfo as $netInfo): ?>
+                                                                <tr>
+                                                                    <td><?= $netInfo['name'] ?></td>
+                                                                    <td><?= $netInfo['type'] ?></td>
+                                                                    <td><?= $netInfo['state'] ?></td>
+                                                                    <td><?= $netInfo['speed_bits_per_second'] == -1 ? '' : $netInfo['speed_bits_per_second']; ?></td>
+                                                                    <td><?= $netInfo['num_bytes_received'] == -1 ? '' : $netInfo['num_bytes_received']; ?></td>
+                                                                    <td><?= $netInfo['num_bytes_sent'] == -1 ? '' : $netInfo['num_bytes_sent']; ?></td>
+                                                                    <td><?= $netInfo['num_received_packets'] == -1 ? '' : $netInfo['num_received_packets']; ?></td>
+                                                                    <td><?= $netInfo['num_sent_packets'] == -1 ? '' : $netInfo['num_sent_packets']; ?></td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </li>
+                                        
                                     <li class="collection-item">
                                         
                                         <ul class="collection with-header">
@@ -227,8 +276,9 @@
                         $(document).ready(function () {
                             
                             <?php if($__is_logged_in): ?>
-                                $('#processes-table').DataTable({"lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
-                                $('#services-table').DataTable({"lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                $('#network-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                $('#processes-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                $('#services-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('select').formSelect();
                             <?php endif; ?>
                                 

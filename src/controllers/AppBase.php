@@ -602,16 +602,20 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
 
         // retrieve via ginfo
-        $uptimeText = ($generalInfo instanceof GinfoGeneral && $generalInfo->getUptime() instanceof DateInterval) 
-                        ? 
-                        Utils::getDefaultIfEmpty(
-                            $generalInfo->getUptime()->format('%d days, %h hours, %i minutes, %s seconds')
-                            , ''
-                        ) 
-                        : 
-                        '';
+        // TODO: BUG: Monday July 13th, discovered that getUptime() in ginfo is not returning the 
+        // accurate value. The server has been up for 32 days, 19 hours, 24 minutes
+        // Ginfo was returning 2 days, 19 hours, 23 minutes, 46 seconds. Will revert to linfo for
+        // this data as it returns a reasonable value like 32 days, 19 hours, 24 minutes, 16 seconds
+//        $uptimeText = ($generalInfo instanceof GinfoGeneral && $generalInfo->getUptime() instanceof DateInterval) 
+//                        ? 
+//                        Utils::getDefaultIfEmpty(
+//                            $generalInfo->getUptime()->format('%d days, %h hours, %i minutes, %s seconds')
+//                            , ''
+//                        ) 
+//                        : 
+//                        '';
 
-        if ( Utils::getNullIfEmpty($uptimeText) === null ) {
+//        if ( Utils::getNullIfEmpty($uptimeText) === null ) {
 
             // try to retrieve via linfo
             $uptimeText = 
@@ -620,8 +624,12 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                     && array_key_exists('text', $linfoObj->getUpTime())
                 )
                 ? $linfoObj->getUpTime()['text']
-                : '';
-        }
+                : 
+                (
+                    is_string($linfoObj->getUpTime())
+                        ? $linfoObj->getUpTime() : ''
+                );
+//        }
         
         $systemOverviewData['system_overview_schema']['uptime_text'] = $uptimeText;
         

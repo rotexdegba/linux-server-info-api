@@ -102,6 +102,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 . ' and animations that provide more feedback to users. Additionally,'
                 . ' a single underlying responsive system across all platforms allow'
                 . ' for a more unified user experience.!!!! <br>';
+        
         $this->setWarningFlashMessage(str_repeat($msg, 1));
         
         return $this->redirect(s3MVC_MakeLink('/'));
@@ -300,9 +301,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         $req_obj_as_str = preg_replace('/&password=[^&\n]*/i', '&password=SCRUBBED_NOTHING_TOO_SEE_HERE', $req_obj_as_str_uncleaned);
 
 //        $to_addrs = [
-//            'rotexdegba@hotmail.com', 
-//            'savedrotex@gmail.com',
-//            'service@greenenergydirectory.com'
+//            'something@hotmail.com',
 //        ];
         $message_body = "Error Occurred: "
                         . $this->current_uri
@@ -960,7 +959,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ////////////////////////////////////////////////////////////////////////
         // CPU Info
         ////////////////////////////////////////////////////////////////////////
-        $systemOverviewData['system_overview_schema']['cpu_info'] = $this->generateCpuInfoData();
+        $systemOverviewData['system_overview_schema']['cpus_info'] = $this->generateCpuInfoData();
         
         ////////////////////////////////////////////////////////////////////////
         // Selinux Info

@@ -120,7 +120,7 @@ class Server extends \Lsia\Controllers\AppBase
         ];
         
         // Add cpu info data
-        foreach ($systemOverviewData['cpu_info'] as $cpuInfo) {
+        foreach ($systemOverviewData['cpus_info'] as $cpuInfo) {
             
             $viewData['cpuInfo'][] = [
                 'cpu_number'        => [ 'label' => 'CPU Core Number', 'value' => $cpuInfo['cpu_number'] ],
@@ -142,6 +142,15 @@ class Server extends \Lsia\Controllers\AppBase
         $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()->write(json_encode($this->generateSystemOverviewData()));
+        
+        return $response;
+    }
+    
+    public function actionCpusInfo() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateCpuInfoData()));
         
         return $response;
     }

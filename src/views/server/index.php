@@ -145,11 +145,11 @@
                                                                     <td><?= $netInfo['name'] ?></td>
                                                                     <td><?= $netInfo['type'] ?></td>
                                                                     <td><?= $netInfo['state'] ?></td>
-                                                                    <td><?= $netInfo['speed_bits_per_second'] == -1 ? '' : $netInfo['speed_bits_per_second']; ?></td>
-                                                                    <td><?= $netInfo['num_bytes_received'] == -1 ? '' : $netInfo['num_bytes_received']; ?></td>
-                                                                    <td><?= $netInfo['num_bytes_sent'] == -1 ? '' : $netInfo['num_bytes_sent']; ?></td>
-                                                                    <td><?= $netInfo['num_received_packets'] == -1 ? '' : $netInfo['num_received_packets']; ?></td>
-                                                                    <td><?= $netInfo['num_sent_packets'] == -1 ? '' : $netInfo['num_sent_packets']; ?></td>
+                                                                    <td><?= $netInfo['speed_bits_per_second'] == -1 ? '' : ($netInfo['speed_bits_per_second'] / 1000000000) . ' Gb/s'; ?></td>
+                                                                    <td><?= $netInfo['num_bytes_received'] == -1 ? '' : number_format($netInfo['num_bytes_received']); ?></td>
+                                                                    <td><?= $netInfo['num_bytes_sent'] == -1 ? '' : number_format($netInfo['num_bytes_sent']); ?></td>
+                                                                    <td><?= $netInfo['num_received_packets'] == -1 ? '' : number_format($netInfo['num_received_packets']); ?></td>
+                                                                    <td><?= $netInfo['num_sent_packets'] == -1 ? '' : number_format($netInfo['num_sent_packets']); ?></td>
                                                                 </tr>
                                                             <?php endforeach; ?>
                                                         </tbody>

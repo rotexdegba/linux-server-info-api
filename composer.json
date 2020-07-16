@@ -1,6 +1,6 @@
 {
     "name": "cfsweb/linux-server-info-api",
-    "description": "Web App that emmits various server related info in json format to any web-client.",
+    "description": "Web App that displays various server related info and also emmits the info in json format to any json-compatible client.",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {

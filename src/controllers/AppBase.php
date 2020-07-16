@@ -1025,6 +1025,75 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $cpuInfoData;
     }
     
+    protected function generatePciAndUsbHardwareInfoData(): array {
+
+        $pciAndUsbHardwareInfoData = [];
+        
+        /** @var \Linfo\Linfo $linfo */
+        $linfo = $this->container->get('linfo_server_info');
+        
+        /** @var \Linfo\OS\OS $linfoObj */
+        $linfoObj = $linfo->getParser();
+
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        
+        $ginfoPciHwData = $ginfoObj->getPci();
+        $ginfoUsbHwData = $ginfoObj->getUsb();
+        
+        if(Utils::isCountableWithData($ginfoPciHwData)) {
+
+            /** @var \Ginfo\Info\Pci $pciHwRecord */
+            foreach($ginfoPciHwData as $pciHwRecord) {
+
+                $pciAndUsbHardwareInfoData[] = [
+                    'name'      => $pciHwRecord->getName(),
+                    'vendor'    => $pciHwRecord->getVendor(),
+                    'type'      => 'PCI',
+                ];
+            } // foreach($ginfoPciHwData as $pciHwRecord)
+        } // if(Utils::isCountableWithData($ginfoPciHwData))
+        
+        if(Utils::isCountableWithData($ginfoUsbHwData)) {
+
+            /** @var \Ginfo\Info\Usb $usbHwRecord */
+            foreach($ginfoUsbHwData as $usbHwRecord) {
+
+                $pciAndUsbHardwareInfoData[] = [
+                    'name'      => $usbHwRecord->getName(),
+                    'vendor'    => $usbHwRecord->getVendor(),
+                    'type'      => 'USB',
+                ];
+            } // foreach($ginfoUsbHwData as $usbHwRecord)
+        } // if(Utils::isCountableWithData($ginfoUsbHwData))
+        
+        if( 
+            count($pciAndUsbHardwareInfoData) === 0 
+            && method_exists($linfoObj, 'getDevs')
+        ) {
+            // Could not get the data via ginfo. Try linfo
+            $pciAndUsbHwData = $linfoObj->getDevs();
+            $pluck = function($key, $potentialArray, $default='') {
+                
+                return is_array($potentialArray) 
+                       && array_key_exists($key, $potentialArray)
+                        ? $potentialArray[$key]
+                        : $default;
+            };
+            
+            foreach ($pciAndUsbHwData as $pciOrUsbHwRecord) {
+                $pciAndUsbHardwareInfoData[] = [
+                    'name'      => $pluck('device', $pciOrUsbHwRecord),
+                    'vendor'    => $pluck('vendor', $pciOrUsbHwRecord),
+                    'type'      => strtoupper($pluck('type', $pciOrUsbHwRecord, 'UNKNOWN')),
+                ];
+            }
+        }
+        
+        return $pciAndUsbHardwareInfoData;
+    }
+    
     protected function generateNetworkInfoData() : array {
         
         $networkInfoData = [];

@@ -94,6 +94,12 @@ class Server extends \Lsia\Controllers\AppBase
                                           [ 'label' => 'Total Number of Zombie Processes',      'value' => $systemOverviewData['total_number_of_zombie_processes_linux'] ]
                                        ],
             'cpuInfo'               => [],
+            'hwInfo'                => \VersatileCollections\ArraysCollection::makeNew($this->generatePciAndUsbHardwareInfoData())
+                                            ->sortByMultipleFields( 
+                                                new MultiSortParameters('type', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)),
+                                                new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL))
+                                            )
+                                            ,
             'networkInfo'           => \VersatileCollections\ArraysCollection::makeNew($this->generateNetworkInfoData())
                                             ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
                                             ,
@@ -151,6 +157,15 @@ class Server extends \Lsia\Controllers\AppBase
         $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()->write(json_encode($this->generateCpuInfoData()));
+        
+        return $response;
+    }
+    
+    public function actionHardwareInfo() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generatePciAndUsbHardwareInfoData()));
         
         return $response;
     }

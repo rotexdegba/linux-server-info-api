@@ -119,6 +119,40 @@
                                         
                                         <ul class="collection with-header">
                                             
+                                            <li class="collection-header"><h5>Hardware Device Info</h5></li>
+                                                                                        
+                                            <?php if( count($hwInfo) > 0 ): ?>
+                                                
+                                                <li class="collection-item"> 
+
+                                                    <table id="hw-devices-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>Name</th>
+                                                                <th>Vendor</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($hwInfo as $deviceInfo): ?>
+                                                                <tr>
+                                                                    <td><?= $deviceInfo['type'] ?></td>
+                                                                    <td><?= $deviceInfo['name'] ?></td>
+                                                                    <td><?= $deviceInfo['vendor'] ?></td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </li>
+                                    
+                                    <li class="collection-item">
+                                        
+                                        <ul class="collection with-header">
+                                            
                                             <li class="collection-header"><h5>Network Devices</h5></li>
                                                                                         
                                             <?php if( count($networkInfo) > 0 ): ?>
@@ -276,6 +310,7 @@
                         $(document).ready(function () {
                             
                             <?php if($__is_logged_in): ?>
+                                $('#hw-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#network-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#processes-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#services-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});

@@ -148,6 +148,38 @@
                                             <?php endif; ?>
                                         </ul>
                                     </li>
+                                        
+                                    <li class="collection-item">
+                                        
+                                        <ul class="collection with-header">
+                                            
+                                            <li class="collection-header"><h5>Sound Card Info</h5></li>
+                                                                                        
+                                            <?php if( count($sCardInfo) > 0 ): ?>
+                                                
+                                                <li class="collection-item"> 
+
+                                                    <table id="soundcard-devices-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Vendor</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($sCardInfo as $deviceInfo): ?>
+                                                                <tr>
+                                                                    <td><?= $deviceInfo['name'] ?></td>
+                                                                    <td><?= $deviceInfo['vendor'] ?></td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </li>
                                     
                                     <li class="collection-item">
                                         
@@ -310,6 +342,7 @@
                         $(document).ready(function () {
                             
                             <?php if($__is_logged_in): ?>
+                                $('#soundcard-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#hw-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#network-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#processes-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});

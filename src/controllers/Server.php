@@ -100,6 +100,11 @@ class Server extends \Lsia\Controllers\AppBase
                                                 new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL))
                                             )
                                             ,
+            'sCardInfo'             => \VersatileCollections\ArraysCollection::makeNew($this->generateSoundCardInfoData())
+                                            ->sortByMultipleFields(
+                                                new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL))
+                                            )
+                                            ,
             'networkInfo'           => \VersatileCollections\ArraysCollection::makeNew($this->generateNetworkInfoData())
                                             ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
                                             ,
@@ -166,6 +171,15 @@ class Server extends \Lsia\Controllers\AppBase
         $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()->write(json_encode($this->generatePciAndUsbHardwareInfoData()));
+        
+        return $response;
+    }
+    
+    public function actionSoundCardInfo() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateSoundCardInfoData()));
         
         return $response;
     }

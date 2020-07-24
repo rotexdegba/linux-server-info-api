@@ -816,9 +816,12 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         //]
         
         $systemOverviewData['system_overview_schema']['overall_cpu_usage_percent'] =
-            $cpuInfo->column('usage_percentage') // extract usage_percentage values from each item in the collection
-                    ->getAsNewType(NumericsCollection::class) // create a numeric collection containing the usage_percentage values
-                    ->sum() / $cpuInfo->count(); // calculate the sum of all the usage_percentage values and divide by the number of items
+            $cpuInfo->count() > 0 
+                ?
+                    $cpuInfo->column('usage_percentage') // extract usage_percentage values from each item in the collection
+                            ->getAsNewType(NumericsCollection::class) // create a numeric collection containing the usage_percentage values
+                            ->sum() / $cpuInfo->count() // calculate the sum of all the usage_percentage values and divide by the number of items
+                :   -1.0;
         
         ////////////////////////////////////////////////////////////////////////
         // Total number of Physical CPU Cores
@@ -1074,24 +1077,62 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         ) {
             // Could not get the data via ginfo. Try linfo
             $pciAndUsbHwData = $linfoObj->getDevs();
-            $pluck = function($key, $potentialArray, $default='') {
-                
-                return is_array($potentialArray) 
-                       && array_key_exists($key, $potentialArray)
-                        ? $potentialArray[$key]
-                        : $default;
-            };
             
             foreach ($pciAndUsbHwData as $pciOrUsbHwRecord) {
                 $pciAndUsbHardwareInfoData[] = [
-                    'name'      => $pluck('device', $pciOrUsbHwRecord),
-                    'vendor'    => $pluck('vendor', $pciOrUsbHwRecord),
-                    'type'      => strtoupper($pluck('type', $pciOrUsbHwRecord, 'UNKNOWN')),
+                    'name'      => Utils::arrayGet($pciOrUsbHwRecord, 'device'),
+                    'vendor'    => Utils::arrayGet($pciOrUsbHwRecord, 'vendor'),
+                    'type'      => strtoupper(Utils::arrayGet($pciOrUsbHwRecord, 'type', 'UNKNOWN')),
                 ];
             }
         }
         
         return $pciAndUsbHardwareInfoData;
+    }
+    
+    protected function generateSoundCardInfoData(): array {
+
+        $soundCardInfoData = [];
+        
+        /** @var \Linfo\Linfo $linfo */
+        $linfo = $this->container->get('linfo_server_info');
+        
+        /** @var \Linfo\OS\OS $linfoObj */
+        $linfoObj = $linfo->getParser();
+
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        
+        $ginfoSoundCardData = $ginfoObj->getSoundCard();
+        
+        if(Utils::isCountableWithData($ginfoSoundCardData)) {
+
+            /** @var \Ginfo\Info\SoundCard $soundCardRecord */
+            foreach($ginfoSoundCardData as $soundCardRecord) {
+
+                $soundCardInfoData[] = [
+                    'name'      => $soundCardRecord->getName(),
+                    'vendor'    => $soundCardRecord->getVendor(),
+                ];
+            } // foreach($ginfoSoundCardData as $soundCardRecord)
+        } // if(Utils::isCountableWithData($ginfoSoundCardData))
+        
+        if(count($soundCardInfoData) === 0 && method_exists($linfoObj, 'getSoundCards')) {
+            
+            // Could not get the data via ginfo. Try linfo
+            $linfoSoundCardData = $linfoObj->getSoundCards();
+            
+            foreach ($linfoSoundCardData as $linfoSoundCardRecord) {
+                
+                $soundCardInfoData[] = [
+                    'name'      => Utils::arrayGet($linfoSoundCardRecord, 'card'),
+                    'vendor'    => Utils::arrayGet($linfoSoundCardRecord, 'vendor'),
+                ];
+            } // foreach ($linfoSoundCardData as $linfoSoundCardRecord)
+        } // if(count($soundCardInfoData) === 0 && method_exists($linfoObj, 'getSoundCards'))
+        
+        return $soundCardInfoData;
     }
     
     protected function generateNetworkInfoData() : array {

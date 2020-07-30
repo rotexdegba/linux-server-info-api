@@ -7,6 +7,7 @@ use DateInterval;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use VersatileCollections\ArraysCollection;
 use VersatileCollections\ObjectsCollection;
 use VersatileCollections\GenericCollection;
 use VersatileCollections\StringsCollection;
@@ -94,21 +95,27 @@ class Server extends \Lsia\Controllers\AppBase
                                           [ 'label' => 'Total Number of Zombie Processes',      'value' => $systemOverviewData['total_number_of_zombie_processes_linux'] ]
                                        ],
             'cpuInfo'               => [],
-            'hwInfo'                => \VersatileCollections\ArraysCollection::makeNew($this->generatePciAndUsbHardwareInfoData())
+            'hwInfo'                => ArraysCollection::makeNew($this->generatePciAndUsbHardwareInfoData())
                                             ->sortByMultipleFields( 
                                                 new MultiSortParameters('type', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)),
                                                 new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL))
                                             )
                                             ,
-            'sCardInfo'             => \VersatileCollections\ArraysCollection::makeNew($this->generateSoundCardInfoData())
+            'sCardInfo'             => ArraysCollection::makeNew($this->generateSoundCardInfoData())
                                             ->sortByMultipleFields(
                                                 new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL))
                                             )
                                             ,
-            'networkInfo'           => \VersatileCollections\ArraysCollection::makeNew($this->generateNetworkInfoData())
+            'networkInfo'           => ArraysCollection::makeNew($this->generateNetworkInfoData())
                                             ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
                                             ,
-            'processesInfo'         => \VersatileCollections\ArraysCollection::makeNew($this->generateProcessData())
+            'diskDrivesInfo'        => ArraysCollection::makeNew($this->generateDiskDrivesData())
+                                            ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
+                                            ,
+            'diskMountsInfo'        => ArraysCollection::makeNew($this->generateDiskMountsData())
+                                            ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
+                                            ,
+            'processesInfo'         => ArraysCollection::makeNew($this->generateProcessData())
                                             ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
                                             ->transform(function($key, $val) {
                                                 
@@ -119,7 +126,7 @@ class Server extends \Lsia\Controllers\AppBase
                                                 
                                                 return $val;
                                             }),
-            'servicesInfo'              => \VersatileCollections\ArraysCollection::makeNew($this->generateServicesData())
+            'servicesInfo'              => ArraysCollection::makeNew($this->generateServicesData())
                                             ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
                                             ->transform(function($key, $val) {
                                                 
@@ -180,6 +187,24 @@ class Server extends \Lsia\Controllers\AppBase
         $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()->write(json_encode($this->generateSoundCardInfoData()));
+        
+        return $response;
+    }
+    
+    public function actionDiskDrivesInfo() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateDiskDrivesData()));
+        
+        return $response;
+    }
+    
+    public function actionDiskMountsInfo() {
+
+        $response = $this->response->withHeader('Content-type', 'application/json');
+
+        $response->getBody()->write(json_encode($this->generateDiskMountsData()));
         
         return $response;
     }

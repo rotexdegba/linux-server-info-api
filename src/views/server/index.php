@@ -1,4 +1,14 @@
+<?php
+function formatPositiveBytes(float $bytes, $defaultReturnVal='') {
+    
+    if($bytes > -1) {
         
+        return \Lsia\Utils::bytesToHumanReadable($bytes);
+    }
+    
+    return $defaultReturnVal;
+}
+?>
         <link type="text/css" rel="stylesheet" href="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.css'); ?>" media="screen,projection" />
         <script type="text/javascript" src="<?= s3MVC_MakeLink('/datatables/jquery.dataTables.min.js'); ?>"></script> 
 
@@ -26,12 +36,12 @@
                                         <li class="collection-item"> 
                                             <strong><i class="material-icons tiny">memory</i> <?= $totalRamBytes['label']; ?>:</strong>
                                             <label for="ram_usage"> 
-                                                <?= \Lsia\Utils::bytesToHumanReadable($usedRamBytes['value']); ?> 
-                                                of <?= \Lsia\Utils::bytesToHumanReadable($totalRamBytes['value']); ?> 
+                                                <?= formatPositiveBytes($usedRamBytes['value']); ?> 
+                                                of <?= formatPositiveBytes($totalRamBytes['value']); ?> 
                                             </label>
                                             <meter id="ram_usage" value="<?= $usedRamBytes['value']; ?>" min="0" max="<?= $totalRamBytes['value']; ?>">
-                                                <?= \Lsia\Utils::bytesToHumanReadable($usedRamBytes['value']); ?> 
-                                                of <?= \Lsia\Utils::bytesToHumanReadable($totalRamBytes['value']); ?> 
+                                                <?= formatPositiveBytes($usedRamBytes['value']); ?> 
+                                                of <?= formatPositiveBytes($totalRamBytes['value']); ?> 
                                             </meter>
                                         </li>
                                         
@@ -40,12 +50,12 @@
                                             <li class="collection-item"> 
                                                 <strong><i class="material-icons tiny">memory</i> <?= $totalSwapBytes['label']; ?>:</strong>
                                                 <label for="swap_usage"> 
-                                                    <?= \Lsia\Utils::bytesToHumanReadable($usedSwapBytes['value']); ?> 
-                                                    of <?= \Lsia\Utils::bytesToHumanReadable($totalSwapBytes['value']); ?> 
+                                                    <?= formatPositiveBytes($usedSwapBytes['value']); ?> 
+                                                    of <?= formatPositiveBytes($totalSwapBytes['value']); ?> 
                                                 </label>
                                                 <meter id="swap_usage" value="<?= $usedSwapBytes['value']; ?>" min="0" max="<?= $totalSwapBytes['value']; ?>">
-                                                    <?= \Lsia\Utils::bytesToHumanReadable($usedSwapBytes['value']); ?> 
-                                                    of <?= \Lsia\Utils::bytesToHumanReadable($totalSwapBytes['value']); ?> 
+                                                    <?= formatPositiveBytes($usedSwapBytes['value']); ?> 
+                                                    of <?= formatPositiveBytes($totalSwapBytes['value']); ?> 
                                                 </meter>
                                             </li>
                                             
@@ -114,6 +124,113 @@
                                     <?php endif; ?>
                                         
                                 <?php if($__is_logged_in): ?>
+                                        
+                                    <li class="collection-item">
+                                        
+                                        <ul class="collection with-header">
+                                            
+                                            <li class="collection-header"><h5>Disk Drive Info</h5></li>
+                                                                                        
+                                            <?php if( count($diskDrivesInfo) > 0 ): ?>
+                                                
+                                                <li class="collection-item"> 
+
+                                                    <table id="disk-drives-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Vendor</th>
+                                                                <th>Device</th>
+                                                                <th>Bytes Read</th>
+                                                                <th>Bytes Written</th>
+                                                                <th>Total Size (Bytes)</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($diskDrivesInfo as $deviceInfo): ?>
+                                                                <tr>
+                                                                    <td>
+                                                                        <?= $deviceInfo['name'] ?>
+                                                                        
+                                                                        <?php if(count($deviceInfo['partitions']) > 0): ?>
+                                                                            <ul>
+                                                                            <?php foreach($deviceInfo['partitions'] as $partition): ?>
+
+                                                                                <li>
+                                                                                    <strong> &#9492; <?= $partition['name'] ?>:</strong> 
+                                                                                    <?= formatPositiveBytes($partition['size_in_bytes']) ?>
+                                                                                </li>
+
+                                                                            <?php endforeach; ?>
+                                                                            </ul>
+                                                                        <?php endif;//if(count($deviceInfo['partitions']) > 0) ?>
+                                                                    </td>
+                                                                    <td><?= $deviceInfo['vendor'] ?></td>
+                                                                    <td><?= $deviceInfo['device'] ?></td>
+                                                                    <td><?= formatPositiveBytes($deviceInfo['bytes_read']) ?></td>
+                                                                    <td><?= formatPositiveBytes($deviceInfo['bytes_written']) ?></td>
+                                                                    <td><?= formatPositiveBytes($deviceInfo['size_in_bytes']) ?></td>
+                                                                </tr>
+                                                                
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </li>
+                                        
+                                    <li class="collection-item">
+                                        
+                                        <ul class="collection with-header">
+                                            
+                                            <li class="collection-header"><h5>Disk Mount Info</h5></li>
+                                                                                        
+                                            <?php if( count($diskMountsInfo) > 0 ): ?>
+                                                
+                                                <li class="collection-item"> 
+
+                                                    <table id="disk-mounts-table" class="display">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Name</th>
+                                                                <th>Mount Point</th>
+                                                                <th>Mount Options</th>
+                                                                <th>Type</th>
+                                                                <th>Size</th>
+                                                                <th>Used</th>
+                                                                <th>Free</th>
+                                                                <th>Percent Used</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <?php foreach($diskMountsInfo as $deviceInfo): ?>
+                                                                <tr>
+                                                                    <td><?= $deviceInfo['name'] ?></td>
+                                                                    <td><?= $deviceInfo['mount_point'] ?></td>
+                                                                    <td><?= count($deviceInfo['options']) > 0 ? "<ul><li>" . implode("</li><li>", $deviceInfo['options']) . "</li></ul>" : ''; ?></td>
+                                                                    <td><?= $deviceInfo['type'] ?></td>
+                                                                    
+                                                                    <td><?= formatPositiveBytes($deviceInfo['size_in_bytes']) ?></td>
+                                                                    <td><?= formatPositiveBytes($deviceInfo['used_bytes']) ?></td>
+                                                                    <td><?= formatPositiveBytes($deviceInfo['free_bytes']) ?></td>
+                                                                    <td>
+                                                                        <?php if($deviceInfo['used_percent'] > -1): ?>
+                                                                        
+                                                                            <?= $deviceInfo['used_percent']; ?> %
+                                                                        
+                                                                        <?php endif; ?>
+                                                                    </td>
+                                                                </tr>
+                                                            <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </li>
                                         
                                     <li class="collection-item">
                                         
@@ -212,8 +329,8 @@
                                                                     <td><?= $netInfo['type'] ?></td>
                                                                     <td><?= $netInfo['state'] ?></td>
                                                                     <td><?= $netInfo['speed_bits_per_second'] == -1 ? '' : ($netInfo['speed_bits_per_second'] / 1000000000) . ' Gb/s'; ?></td>
-                                                                    <td><?= $netInfo['num_bytes_received'] == -1 ? '' : number_format($netInfo['num_bytes_received']); ?></td>
-                                                                    <td><?= $netInfo['num_bytes_sent'] == -1 ? '' : number_format($netInfo['num_bytes_sent']); ?></td>
+                                                                    <td><?= $netInfo['num_bytes_received'] == -1 ? '' : formatPositiveBytes($netInfo['num_bytes_received']); ?></td>
+                                                                    <td><?= $netInfo['num_bytes_sent'] == -1 ? '' : formatPositiveBytes($netInfo['num_bytes_sent']); ?></td>
                                                                     <td><?= $netInfo['num_received_packets'] == -1 ? '' : number_format($netInfo['num_received_packets']); ?></td>
                                                                     <td><?= $netInfo['num_sent_packets'] == -1 ? '' : number_format($netInfo['num_sent_packets']); ?></td>
                                                                 </tr>
@@ -272,12 +389,12 @@
                                                                     </td>
                                                                     <td><?= $processInfo['num_threads'] ?></td>
                                                                     <td><?= $processInfo['state'] ?></td>
-                                                                    <td><?= \Lsia\Utils::bytesToHumanReadable($processInfo['memory']) ?></td>
-                                                                    <td><?= \Lsia\Utils::bytesToHumanReadable($processInfo['peak_memory']) ?></td>
+                                                                    <td><?= formatPositiveBytes($processInfo['memory']) ?></td>
+                                                                    <td><?= formatPositiveBytes($processInfo['peak_memory']) ?></td>
                                                                     <td><?= $processInfo['pid'] ?></td>
                                                                     <td><?= $processInfo['user'] ?></td>
-                                                                    <td><?= $processInfo['io_bytes_read'] ?></td>
-                                                                    <td><?= $processInfo['io_bytes_written'] ?></td>
+                                                                    <td><?= formatPositiveBytes($processInfo['io_bytes_read'], 0) ?></td>
+                                                                    <td><?= formatPositiveBytes($processInfo['io_bytes_written'], 0) ?></td>
                                                                 </tr>
                                                             <?php endforeach; ?>
                                                         </tbody>
@@ -343,6 +460,8 @@
                             
                             <?php if($__is_logged_in): ?>
                                 $('#soundcard-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                $('#disk-drives-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
+                                $('#disk-mounts-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#hw-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#network-devices-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
                                 $('#processes-table').DataTable({"responsive": true, "lengthMenu": [ 10, 25, 50, 75, 100, 250, 500, 1000, 5000 ]});
@@ -352,3 +471,4 @@
                                 
                         });
                     </script>
+

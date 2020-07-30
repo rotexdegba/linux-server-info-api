@@ -52,20 +52,23 @@ class Utils {
         return $expr ? $trueVal : $defaultVal;
     }
     
-    public static function bytesToHumanReadable($bytes, $decimalPlaces = 2) {
-
-        $type = array("bytes", "KB", "MB", "GB", "TB", "PB", "EXB", "ZB", "YB");
+    public static function bytesToHumanReadable(
+        $bytes, 
+        $decimalPlaces = 2, 
+        $divisor=1024,
+        $units = ["bytes", "KB", "MB", "GB", "TB", "PB", "EXB", "ZB", "YB"]  
+    ) {
         $index = 0;
 
-        while ($bytes >= 1024) {
+        while ($bytes >= $divisor) {
 
-            $bytes /= 1024;
+            $bytes /= $divisor;
             $index++;
         }
 
         $formattedBytes = number_format(((float) $bytes), $decimalPlaces);
 
-        return ("" . $formattedBytes . " " . $type[$index]);
+        return ("" . $formattedBytes . " " . $units[$index]);
     }
 
     public static function getListOfFileSystems() {
@@ -164,7 +167,6 @@ class Utils {
                 
                 $errStr = ((string)$error);
                 $messages .= "<span class=\"helper-text red-text\">{$errStr}</span>".PHP_EOL;
-                
             }
         }
         

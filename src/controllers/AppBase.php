@@ -5,6 +5,7 @@ use DateTime;
 use Lsia\Utils;
 use DateInterval;
 use Ginfo\Info\Cpu as GinfoCpu;
+use Ginfo\Info\Disk as GinfoDisk;
 use Ginfo\Info\Memory as GinfoMemory;
 use Ginfo\Info\General as GinfoGeneral;
 use Ginfo\Info\Selinux as GinfoSelinux;
@@ -13,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use VersatileCollections\ArraysCollection;
 use VersatileCollections\NumericsCollection;
+use VersatileCollections\MultiSortParameters;
 
 /**
  * 
@@ -474,6 +476,82 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         }
         
         return $processDataToReturn;
+    }
+    
+    protected function generateDiskDrivesData(): array {
+
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        $diskDriveDataToReturn = [];
+        
+        $diskObj = $ginfoObj->getDisk();
+        
+        if( 
+            $diskObj instanceof GinfoDisk 
+            && Utils::isCountableWithData($diskObj->getDrives()) 
+        ) {
+            /** @var \Ginfo\Info\Disk\Drive $diskDriveDatum */
+            foreach($diskObj->getDrives() as $diskDriveDatum) {
+                
+                $partitions = [];
+                
+                /** @var \Ginfo\Info\Disk\Drive\Partition $partition */
+                foreach(Utils::getDefaultIfEmpty($diskDriveDatum->getPartitions(), []) as $partition) {
+                    
+                    $partitions[] = [
+                        'name'          => Utils::getDefaultIfEmpty($partition->getName(), ''),
+                        'size_in_bytes' => Utils::getDefaultIfEmpty($partition->getSize(), -1.0),
+                    ];
+                }
+                
+                $diskDriveDataToReturn[] = [
+                    'name'          => Utils::getDefaultIfEmpty($diskDriveDatum->getName(), ''),
+                    'vendor'        => Utils::getDefaultIfEmpty($diskDriveDatum->getVendor(), ''),
+                    'device'        => Utils::getDefaultIfEmpty($diskDriveDatum->getDevice(), ''),
+                    'bytes_read'    => Utils::getDefaultIfEmpty($diskDriveDatum->getReads(), -1.0),
+                    'bytes_written' => Utils::getDefaultIfEmpty($diskDriveDatum->getWrites(), -1.0),
+                    'size_in_bytes' => Utils::getDefaultIfEmpty($diskDriveDatum->getSize(), -1.0),
+                    'partitions'    => ArraysCollection::makeNew($partitions)
+                                            ->sortByMultipleFields( new MultiSortParameters('name', \SORT_ASC, (\SORT_FLAG_CASE | \SORT_NATURAL)) )
+                                            ->toArray(),
+                ];
+            }
+        }
+        
+        return $diskDriveDataToReturn;
+    }
+    
+    protected function generateDiskMountsData(): array {
+
+        /** @var \Ginfo\Ginfo $ginfo */
+        $ginfo = $this->container->get('ginfo_server_info');
+        $ginfoObj = $ginfo->getInfo();
+        $diskMountDataToReturn = [];
+        $diskObj = $ginfoObj->getDisk();
+        
+        if( 
+            $diskObj instanceof GinfoDisk 
+            && Utils::isCountableWithData($diskObj->getMounts()) 
+        ) {
+            /** @var \Ginfo\Info\Disk\Mount $diskMountDatum */
+            foreach($diskObj->getMounts() as $diskMountDatum) {
+                                
+                $diskMountDataToReturn[] = [
+                    'name'          => Utils::getDefaultIfEmpty($diskMountDatum->getDevice(), ''),
+                    'mount_point'   => Utils::getDefaultIfEmpty($diskMountDatum->getMount(), ''),
+                    'type'          => Utils::getDefaultIfEmpty($diskMountDatum->getType(), ''),
+                    'size_in_bytes' => Utils::getDefaultIfEmpty($diskMountDatum->getSize(), -1.0),
+                    'used_bytes'    => Utils::getDefaultIfEmpty($diskMountDatum->getUsed(), -1.0),
+                    'free_bytes'    => Utils::getDefaultIfEmpty($diskMountDatum->getFree(), -1.0),
+                    'free_percent'  => Utils::getDefaultIfEmpty($diskMountDatum->getFreePercent(), -1.0),
+                    'used_percent'  => Utils::getDefaultIfEmpty($diskMountDatum->getUsedPercent(), -1.0),
+                    'options'        => Utils::getDefaultIfEmpty($diskMountDatum->getOptions(), []),
+                ];
+            }
+        }
+        
+        return $diskMountDataToReturn;
     }
     
     protected function generateServicesData(): array {

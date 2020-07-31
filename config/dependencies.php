@@ -3,9 +3,6 @@
 // Dependencies
 /////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// Start configuration specific to all environments
-////////////////////////////////////////////////////////////////////////////////
 $container['logger'] = function () {
 
     $ds = DIRECTORY_SEPARATOR;
@@ -20,7 +17,7 @@ $container['logger'] = function () {
     return new \Vespula\Log\Log($adapter);
 };
 
-// this MUST be replaced with any subclass of \\Slim3MvcTools\\Controllers\\BaseController
+// this MUST be a subclass of \\Slim3MvcTools\\Controllers\\BaseController
 $container['errorHandlerClass'] = \Lsia\Controllers\HttpErrorHandler::class;
 
 //Override the default 500 System Error Handler
@@ -44,7 +41,7 @@ $container['errorHandler'] = function ($c) {
     };
 };
 
-// this MUST be replaced with any subclass of \\Slim3MvcTools\\Controllers\\BaseController
+// this MUST be a subclass of \\Slim3MvcTools\\Controllers\\BaseController
 $container['notFoundHandlerClass'] = \Lsia\Controllers\HttpErrorHandler::class;
 
 //Override the default Not Found Handler
@@ -69,7 +66,7 @@ $container['notFoundHandler'] = function ($c) {
     };
 };
 
-// this MUST be replaced with any subclass of \\Slim3MvcTools\\Controllers\\BaseController
+// this MUST be a subclass of \\Slim3MvcTools\\Controllers\\BaseController
 $container['notAllowedHandlerClass'] = \Lsia\Controllers\HttpErrorHandler::class;
 
 //Override the default Not Allowed Handler
@@ -141,106 +138,11 @@ $container['new_view_renderer'] = $container->factory(function ($c) {
     
     return $view_renderer;
 });
+ 
+$container['vespula_auth'] = function ($c) {
 
-////////////////////////////////////////////////////////////////////////////////
-// End configuration specific to all environments
-////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////
-// Start Vespula.Auth Authentication setup
-////////////////////////////////////////////////////////////////////////////   
-
-if( s3MVC_GetCurrentAppEnvironment() === S3MVC_APP_ENV_PRODUCTION ) {
-    
-    //configuration specific to the production environment
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // Start Vespula.Auth LDAP Authentication setup
-    ////////////////////////////////////////////////////////////////////////////    
-    $container['vespula_auth'] = function ($c) {
-        
-        //Optionally pass a maximum idle time and a time until the session 
-        //expires (in seconds)
-        $expire = 3600;
-        $max_idle = 1200;
-        $session = new \Vespula\Auth\Session\Session($max_idle, $expire, 'VESPULA_AUTH_DATA_'.S3MVC_APP_ROOT_PATH);
-
-        $bind_options = $c->get('settings')['bind_options'];
-
-        $ldap_options = [LDAP_OPT_PROTOCOL_VERSION=>3, LDAP_OPT_REFERRALS=>0];
-        
-        $attributes = [
-            'mail',
-            'givenname'
-        ];
-
-        $uri = $c->get('settings')['ldap_server_addr'];
-        $dn = null;
-        
-        $adapter = new \Vespula\Auth\Adapter\Ldap(
-                        $uri, $dn, $bind_options, $ldap_options, $attributes
-                    );
-        
-        return new \Vespula\Auth\Auth($adapter, $session);
-    };
-    ////////////////////////////////////////////////////////////////////////////
-    // End Vespula.Auth LDAP Authentication setup
-    ////////////////////////////////////////////////////////////////////////////
-    
-} else {
-    
-    //configuration specific to non-production environments
-    
-    ////////////////////////////////////////////////////////////////////////////
-    // Start Vespula.Auth PDO Authentication setup
-    ////////////////////////////////////////////////////////////////////////////
-    $container['vespula_auth'] = function () {
-        
-        $pdo = new \PDO(
-                    'sqlite::memory:', 
-                    null, 
-                    null, 
-                    [
-                        PDO::ATTR_PERSISTENT => true, 
-                        PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION
-                    ]
-                ); 
-        
-        $pass1 = password_hash('admin' , PASSWORD_DEFAULT);
-        $pass2 = password_hash('root' , PASSWORD_DEFAULT);
-
-        $sql = <<<SQL
-DROP TABLE IF EXISTS "user_authentication_accounts";
-CREATE TABLE user_authentication_accounts (
-    username VARCHAR(255), password VARCHAR(255)
-);
-INSERT INTO "user_authentication_accounts" VALUES( 'admin', '$pass1' );
-INSERT INTO "user_authentication_accounts" VALUES( 'root', '$pass2' );
-SQL;
-        $pdo->exec($sql); //add two default user accounts
-        
-        //Optionally pass a maximum idle time and a time until the session 
-        //expires (in seconds)
-        $expire = 3600;
-        $max_idle = 1200;
-        $session = new \Vespula\Auth\Session\Session($max_idle, $expire);
-        
-        $cols = ['username', 'password'];
-        $from = 'user_authentication_accounts';
-        $where = ''; //optional
-
-        $adapter = new \Vespula\Auth\Adapter\Sql($pdo, $from, $cols, $where);
-        
-        return new \Vespula\Auth\Auth($adapter, $session);
-    };
-    ////////////////////////////////////////////////////////////////////////////
-    // End Vespula.Auth PDO Authentication setup
-    ////////////////////////////////////////////////////////////////////////////
-}
-////////////////////////////////////////////////////////////////////////////
-// End Vespula.Auth Authentication setup
-////////////////////////////////////////////////////////////////////////////
-
+    return $c->get('settings')['vespula_auth_adapter_obj']();
+};
 
 $container['aura_session'] = function () {
 
@@ -272,11 +174,9 @@ $container['common_data_for_views_and_templates'] = function ($c) {
     $controller_sess_segment = 
         $c['aura_session']->getSegment($controller_sess_seg_key);
     
-        
     $data['__logged_in_user_name'] = '';
     $data['__logged_in_user_record'] = [];
     $data['__is_logged_in'] = ($c['vespula_auth']->isValid() === true);
-    
     
     if( $data['__is_logged_in'] ) {
 
@@ -363,7 +263,6 @@ $container['linfo_server_info'] = function ($c) {
     $settings['icons'] = true; // simple icons
     $settings['theme'] = 'default'; // Theme file (layout/theme_$n.css). Look at the contents of the layout/ folder for other themes.
     $settings['gzip'] = false; // Manually gzip output. Unneeded if your web server already does it.
-
 
     $settings['allow_changing_themes'] = false; // Allow changing the theme per user in the UI?
 
@@ -475,7 +374,6 @@ $container['linfo_server_info'] = function ($c) {
     $settings['additional_paths'] = array(
              //'/opt/bin' # for example
     );
-
 
     /*
      * Services. It works by specifying locations to PID files, which then get checked

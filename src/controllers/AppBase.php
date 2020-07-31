@@ -91,10 +91,22 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     
     public function actionIndex() {
         
-        //get the contents of the view first
-        $view_str = $this->renderView('index.php', ['controller_object'=>$this]);
+        return $this->redirect(s3MVC_MakeLink('/'));
+    }
+    
+    public function actionRoutes() {
         
-        return $this->renderLayout( $this->layout_template_file_name, ['content'=>$view_str] );
+        $resp = $this->getResponseObjForLoginRedirectionIfNotLoggedIn();
+        
+        if($resp !== false) {
+            
+            return $resp;
+        }
+        
+        ini_set('memory_limit', '256M');
+        ini_set('max_execution_time', 0);
+
+        return $this->renderView('controller-classes-by-action-methods-report.csv.php', []);
     }
     
     public function actionTestMsg() {

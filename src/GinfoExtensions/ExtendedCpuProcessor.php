@@ -15,7 +15,4 @@ class ExtendedCpuProcessor extends Ginfo\Info\Cpu\Processor {
         
         return $this;
     }
-
-
-    
 }

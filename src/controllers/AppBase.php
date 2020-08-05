@@ -94,21 +94,6 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $this->redirect(s3MVC_MakeLink('/'));
     }
     
-    public function actionRoutes() {
-        
-        $resp = $this->getResponseObjForLoginRedirectionIfNotLoggedIn();
-        
-        if($resp !== false) {
-            
-            return $resp;
-        }
-        
-        ini_set('memory_limit', '256M');
-        ini_set('max_execution_time', 0);
-
-        return $this->renderView('controller-classes-by-action-methods-report.csv.php', []);
-    }
-    
     public function actionTestMsg() {
         
         $msg = 'By utilizing elements and principles of Material Design,'

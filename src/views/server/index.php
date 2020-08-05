@@ -74,8 +74,6 @@ function formatPositiveBytes(float $bytes, $defaultReturnVal='') {
                                                 <li class="collection-item">
                                                     <div class="row">
                                                         <?php foreach ($cpuInfo as $cpuInfoRecord): ?>
-
-                                                             <!-- <strong><?= $processInfo['label']; ?>:</strong> <?= $processInfo['value']; ?> -->
                                                              
                                                              <div class="col s12 m6">
                                                                  

@@ -129,7 +129,7 @@ class Tokens extends \Lsia\Controllers\AppBase
             '__csrf_value'          => s3MVC_GetSuperGlobal('post', $commonData['__csrf_key'], $commonData['__csrf_value']), // value for hidden input
             
             'generators_username'   => s3MVC_GetSuperGlobal('post', 'generators_username', $commonData['__logged_in_user_name']), // hidden input
-            'token'                 => s3MVC_GetSuperGlobal('post', 'token', bin2hex(random_bytes(64))), // readonly input
+            'token'                 => s3MVC_GetSuperGlobal('post', 'token', bin2hex(random_bytes(32))), // readonly input
             'date_created'          => s3MVC_GetSuperGlobal('post', 'date_created', date('Y-m-d H:i:s')), // hidden input
             'date_last_edited'      => s3MVC_GetSuperGlobal('post', 'date_last_edited', date('Y-m-d H:i:s')), // hidden input
             'creators_ip'           => $this->request->getServerParams()['REMOTE_ADDR'], // hidden input

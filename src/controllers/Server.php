@@ -158,8 +158,14 @@ class Server extends \Lsia\Controllers\AppBase
     public function actionServerOverview() {
 
         $response = $this->response->withHeader('Content-type', 'application/json');
-
-        $response->getBody()->write(json_encode($this->generateSystemOverviewData()));
+        
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateSystemOverviewData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -168,7 +174,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generateCpuInfoData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateCpuInfoData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -177,7 +189,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generatePciAndUsbHardwareInfoData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generatePciAndUsbHardwareInfoData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -186,7 +204,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generateSoundCardInfoData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateSoundCardInfoData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -195,7 +219,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generateDiskDrivesData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateDiskDrivesData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -203,8 +233,14 @@ class Server extends \Lsia\Controllers\AppBase
     public function actionDiskMountsInfo() {
 
         $response = $this->response->withHeader('Content-type', 'application/json');
-
-        $response->getBody()->write(json_encode($this->generateDiskMountsData()));
+        
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateDiskMountsData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -213,7 +249,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generateNetworkInfoData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateNetworkInfoData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -222,7 +264,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generateProcessData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateProcessData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }
@@ -231,7 +279,13 @@ class Server extends \Lsia\Controllers\AppBase
 
         $response = $this->response->withHeader('Content-type', 'application/json');
 
-        $response->getBody()->write(json_encode($this->generateServicesData()));
+        $response->getBody()
+                 ->write(
+                    $this->generateApiJsonResponse(
+                            $this->generateServicesData(), 
+                            $this->canAccessApiData()
+                        )
+                  );
         
         return $response;
     }

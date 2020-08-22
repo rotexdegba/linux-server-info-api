@@ -9,6 +9,10 @@ use Ginfo\Info\Disk as GinfoDisk;
 use Ginfo\Info\Memory as GinfoMemory;
 use Ginfo\Info\General as GinfoGeneral;
 use Ginfo\Info\Selinux as GinfoSelinux;
+
+use Lsia\Atlas\Models\Token\Token;
+use Lsia\Atlas\Models\Token\TokenRecord;
+
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,6 +32,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     
     const FLASH_MESSAGE_KEY = 'FLASH_MESSAGE_KEY';
     const FLASH_MESSAGE_CSS_CLASS_KEY = 'FLASH_MESSAGE_CSS_CLASS_KEY';
+    
+    const API_TOKEN_KEY_NAME = 'token';
     
     /**
      *
@@ -436,6 +442,80 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                             ->withHeader('Content-Type', $contentType);
     }
     
+    protected function generateApiJsonResponse(array $data, bool $successfulResponse):string {
+        
+        $result = [
+            'status'=>'failure', 
+            'data'=>[], 
+            'time_generated' => (new DateTime())->format('D, j M Y H:i:s T')
+        ];
+        
+        if($successfulResponse) {
+        
+            $result['data'] = $data;
+            $result['status'] = 'success';
+        }
+        
+        return json_encode($result);
+    }
+    
+    protected function canAccessApiData() {
+        
+        // Logged in users accessing this web app via their browser
+        // are allowed to access data from this app.
+        
+        // Non-logged in users accessing this web app via a browser or
+        // other clients like curl, postman, etc, must supply a valid token
+        // in order to be able to access data from this app.
+        
+        return $this->isLoggedIn() || $this->hasValidToken();
+    }
+    
+    protected function hasValidToken() {
+        
+        // Get the user supplied token named by the value of 
+        // static::API_TOKEN_KEY_NAME
+        // If token was retreived from the $_GET
+        //   Query the DB to get the record associated with the token
+        //   If record found
+        //     Then check that the token has not expired
+        //     If Token has not expired
+        //        return true
+        //     Else
+        //        return false
+        //   Else record not found
+        //     return false
+        // Else token was not retreivable from $_GET
+        //   return false
+        
+        $hasValidToken = false;
+        
+        $token = s3MVC_GetSuperGlobal('get', static::API_TOKEN_KEY_NAME, null);
+        
+        if(!is_null($token) && is_string($token) && !Utils::isEmptyString($token)) {
+            
+            /** @var \Atlas\Orm\Atlas $atlasObj */
+            $atlasObj = $this->container->get('atlas');
+            
+            $tokenRecord = $atlasObj->select(Token::class)
+                                    ->where('token = ', $token)
+                                    ->fetchRecord();
+
+            if($tokenRecord instanceof TokenRecord) {
+                
+                // A token is expired if its expiry date is the same value or 
+                // in the past relative to the current date
+                $isExpired = strtotime(date('Y-m-d H:i:s')) >= strtotime(date($tokenRecord->expiry_date));
+                
+                if(!$isExpired) {
+                    
+                    $hasValidToken = true;
+                }
+            }
+        }
+        
+        return $hasValidToken;
+    }
     
     /******************************************************************/
     /******************************************************************/

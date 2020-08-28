@@ -35,6 +35,24 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
     
     const API_TOKEN_KEY_NAME = 'token';
     
+    const HTTP_STATUS_INFO = [
+        200 => 'Ok',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        429 => 'Too Many Requests',
+        500 => 'Internal Server Error',
+    ];
+    
+    const HTTP_STATUS_OK = 200;
+    const HTTP_STATUS_UNAUTHORIZED = 401;
+    const HTTP_STATUS_FORBIDDEN = 403;
+    const HTTP_STATUS_NOT_FOUND = 404;
+    const HTTP_STATUS_METHOD_NOT_ALLOWED = 405;
+    const HTTP_STATUS_DAILY_RATE_LIMIT_EXCEEDED = 429;
+    const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+    
     /**
      *
      * @var \Aura\Session\Segment
@@ -122,12 +140,12 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         if ( $this->vespula_auth->isIdle() ) {
                 
             $msg = 'Your session has been idle for too long. Please sign in again.';
-            $this->setWarningFlashMessage($msg, true);
+            $this->setWarningFlashMessage($msg, false);
                 
         } else if ( $this->vespula_auth->isExpired() ) {
 
             $msg = 'Your session has expired.  Please sign in again.';
-            $this->setWarningFlashMessage($msg, true);
+            $this->setWarningFlashMessage($msg, false);
         }
 
         // CSRF LOGIC
@@ -402,7 +420,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                                && ((bool)$item['primary']) !== true;
                     },
                     true
-                )->getKeys()
+                )->getKeys() // each key is a column name
                  ->toArray();
     }
     
@@ -442,21 +460,66 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                             ->withHeader('Content-Type', $contentType);
     }
     
-    protected function generateApiJsonResponse(array $data, bool $successfulResponse):string {
+    protected function generateApiJsonResponse(array $data, int $httpStatusCode):string {
         
         $result = [
-            'status'=>'failure', 
-            'data'=>[], 
+               'status_code' => array_key_exists($httpStatusCode, static::HTTP_STATUS_INFO) ? $httpStatusCode : static::HTTP_STATUS_OK, 
+               'status_desc' => array_key_exists($httpStatusCode, static::HTTP_STATUS_INFO) ? static::HTTP_STATUS_INFO[$httpStatusCode] : static::HTTP_STATUS_INFO[static::HTTP_STATUS_OK], 
+                      'data' => [], 
             'time_generated' => (new DateTime())->format('D, j M Y H:i:s T')
         ];
         
-        if($successfulResponse) {
+        if($httpStatusCode === static::HTTP_STATUS_OK) {
         
             $result['data'] = $data;
-            $result['status'] = 'success';
         }
         
         return json_encode($result);
+    }
+    
+    protected function getApiHttpStatusCodeForResponse(array $allowedMethods=['GET']): int {
+        
+        $statusCode = static::HTTP_STATUS_OK;
+        
+        if(!$this->canAccessApiData()) {
+            
+            $statusCode = static::HTTP_STATUS_UNAUTHORIZED;
+            
+        } else {
+        
+            $upperCasedAllowedMethods = array_map(
+                function($item) {
+                    return is_string($item) ? strtoupper($item) : $item;
+                }, 
+                $allowedMethods
+            );
+
+            $currentMethod = strtoupper($this->request->getMethod());
+
+            if(!in_array($currentMethod, $upperCasedAllowedMethods)) {
+
+                $statusCode = static::HTTP_STATUS_METHOD_NOT_ALLOWED;
+                
+            } else {
+                
+                if($this->hasTokenExceededDailyRequestLimit()) {
+                    
+                    $statusCode = static::HTTP_STATUS_DAILY_RATE_LIMIT_EXCEEDED;
+                }
+            }
+        }
+        
+        return $statusCode;
+    }
+    
+    protected function hasTokenExceededDailyRequestLimit(): bool {
+        
+        // get token 
+        // query token usage for records for the token in the past 24hrs
+        // if number of records is more than or equal to tokens.max_requests_per_day
+        // return true
+        
+        return false;
     }
     
     protected function canAccessApiData() {

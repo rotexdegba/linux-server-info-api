@@ -163,7 +163,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateSystemOverviewData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -178,7 +178,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateCpuInfoData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -193,7 +193,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generatePciAndUsbHardwareInfoData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -208,7 +208,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateSoundCardInfoData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -223,7 +223,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateDiskDrivesData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -238,7 +238,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateDiskMountsData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -253,7 +253,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateNetworkInfoData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -268,7 +268,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateProcessData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         
@@ -283,7 +283,7 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateServicesData(), 
-                            $this->canAccessApiData()
+                            $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
         

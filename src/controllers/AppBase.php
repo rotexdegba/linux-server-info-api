@@ -12,10 +12,13 @@ use Ginfo\Info\Selinux as GinfoSelinux;
 
 use Lsia\Atlas\Models\Token\Token;
 use Lsia\Atlas\Models\Token\TokenRecord;
+use Lsia\Atlas\Models\TokenUsage\TokenUsage;
 
+use Psr\Http\Message\UriInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 use VersatileCollections\ArraysCollection;
 use VersatileCollections\NumericsCollection;
 use VersatileCollections\MultiSortParameters;
@@ -532,6 +535,46 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // in order to be able to access data from this app.
         
         return $this->isLoggedIn() || $this->hasValidToken();
+    }
+    
+    protected function logTokenUsage() {
+        
+        if($this->hasValidToken()) {
+            
+            $token = s3MVC_GetSuperGlobal('get', static::API_TOKEN_KEY_NAME, null);
+            
+            /** @var \Atlas\Orm\Atlas $atlasObj */
+            $atlasObj = $this->container->get('atlas');
+            
+            $tokenRecord = $atlasObj->select(Token::class)
+                                    ->where('token = ', $token)
+                                    ->fetchRecord();
+
+            if(
+                $tokenRecord instanceof TokenRecord 
+                && $this->request->getUri() instanceof UriInterface
+            ) {                
+                /** @var \Lsia\Atlas\Models\TokenUsage\TokenUsageRecord $newRecord */
+                $newRecord = $atlasObj->newRecord(TokenUsage::class);
+                
+                /** @var \Lsia\ClientIpDetector $ipDetector */
+                $ipDetector = $this->container->get('ip_detector');
+                
+                $newRecord->token_id = $tokenRecord->id;
+                $newRecord->request_uri = $this->request->getUri()->getPath() ?: '/';
+                $newRecord->date_time_of_request = date('Y-m-d H:i:s');
+                $newRecord->request_full_details = Utils::psr7RequestObjToString($this->request);
+                $newRecord->requesters_ip = $ipDetector->getDetectedIp($this->request);
+                
+                try {
+                    $atlasObj->insert($newRecord);
+                    
+                } catch (\Exception $exc) {
+                    
+                    $this->logError($exc->getTraceAsString(), 'Error Saving New TokenUsage Record');
+                }
+            }
+        } // if($this->hasValidToken())
     }
     
     protected function hasValidToken() {

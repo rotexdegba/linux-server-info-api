@@ -442,3 +442,8 @@ $container['trntv_server_info'] = function ($c) {
     /** returns an instance of \Probe\Provider\ProviderInterface */
     return \Probe\ProviderFactory::create();
 };
+
+$container['ip_detector'] = function ($c) {
+    
+    return new \Lsia\ClientIpDetector(false);
+};

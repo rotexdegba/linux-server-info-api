@@ -469,4 +469,3 @@ function formatPositiveBytes(float $bytes, $defaultReturnVal='') {
                                 
                         });
                     </script>
-

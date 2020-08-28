@@ -166,6 +166,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -181,6 +182,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -196,6 +198,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -211,6 +214,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -226,6 +230,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -241,6 +246,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -256,6 +262,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -271,6 +278,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }
@@ -286,6 +294,7 @@ class Server extends \Lsia\Controllers\AppBase
                             $this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
+        $this->logTokenUsage();
         
         return $response;
     }

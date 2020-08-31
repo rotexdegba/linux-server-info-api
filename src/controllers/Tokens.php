@@ -52,10 +52,7 @@ class Tokens extends \Lsia\Controllers\AppBase
     
     public function actionIndex() {
         
-        //get the contents of the view first
-        $view_str = $this->renderView('index.php', ['controller_object'=>$this]);
-        
-        return $this->renderLayout( $this->layout_template_file_name, ['content'=>$view_str] );
+        return $this->redirect(s3MVC_MakeLink('/tokens/my-tokens'));
     }
     
     public function actionMyTokens($idOfLastEditedToken='') {

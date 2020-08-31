@@ -44,7 +44,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         403 => 'Forbidden',
         404 => 'Not Found',
         405 => 'Method Not Allowed',
-        429 => 'Too Many Requests',
+        429 => 'Too Many Requests. Token has exceeded the maximum allowable requests assigned to it for one day. Try again after 24 hours.',
         500 => 'Internal Server Error',
     ];
     
@@ -521,8 +521,38 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         // query token usage for records for the token in the past 24hrs
         // if number of records is more than or equal to tokens.max_requests_per_day
         // return true
+        $tokenExceededDailyLimit = false;
         
-        return false;
+        if($this->hasValidToken()) {
+            
+            $token = s3MVC_GetSuperGlobal('get', static::API_TOKEN_KEY_NAME, null);
+            
+            /** @var \Atlas\Orm\Atlas $atlasObj */
+            $atlasObj = $this->container->get('atlas');
+            
+            $tokenRecord = $atlasObj->select(Token::class)
+                                    ->where('token = ', $token)
+                                    ->fetchRecord();
+
+            if($tokenRecord instanceof TokenRecord) {
+                
+                /** @var \Lsia\Atlas\Models\TokenUsage\TokenUsageRecord $newRecord */
+                $numRecordsInPast24Hrs = 
+                    $atlasObj->select(TokenUsage::class)
+                            ->columns('count(*)')
+                            ->where('token_id = ', $tokenRecord->id)
+                            ->andWhere('date_time_of_request >= ', date('Y-m-d H:i:s', strtotime("-1 days")) )
+                            ->fetchValue();
+
+                $tokenExceededDailyLimit = 
+                    is_numeric($numRecordsInPast24Hrs)
+                    && is_numeric($tokenRecord->max_requests_per_day)
+                    && $tokenRecord->max_requests_per_day > 0
+                    && $numRecordsInPast24Hrs > $tokenRecord->max_requests_per_day;
+            } // if($tokenRecord instanceof TokenRecord)
+        } // if($this->hasValidToken())
+        
+        return $tokenExceededDailyLimit;
     }
     
     protected function canAccessApiData() {

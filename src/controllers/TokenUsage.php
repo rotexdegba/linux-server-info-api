@@ -5,6 +5,9 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use VersatileCollections\ObjectsCollection;
+use Lsia\Atlas\Models\Token\Token;
+
 /**
  * 
  * Description of TokenUsage goes here
@@ -48,8 +51,28 @@ class TokenUsage extends \Lsia\Controllers\AppBase
     
     public function actionIndex() {
         
+        $resp = $this->getResponseObjForLoginRedirectionIfNotLoggedIn();
+        
+        if($resp !== false) {
+            
+            return $resp;
+        }
+            
+        /** @var \Atlas\Orm\Atlas $atlasObj */
+        $atlasObj = $this->container->get('atlas');
+        
+        // Inject the array of records into a versatile collection objects
+        // collection object to get extended collection operation capabilities
+        $tokenRecords = ObjectsCollection::makeNew(
+            $atlasObj->select(Token::class)
+                     ->where('generators_username = ', $this->vespula_auth->getUsername())
+                     ->orderBy('date_created ASC')
+                     ->with(['usages'])
+                     ->fetchRecords()
+        );
+        
         //get the contents of the view first
-        $view_str = $this->renderView('index.php', ['controller_object'=>$this]);
+        $view_str = $this->renderView('index.php', ['tokenRecords'=>$tokenRecords]);
         
         return $this->renderLayout( $this->layout_template_file_name, ['content'=>$view_str] );
     }

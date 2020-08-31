@@ -23,7 +23,7 @@
                 <div class="row">
                     
                     <!-- home link -->
-                    <div class="col s12 l3">
+                    <div class="col s12 l5">
                         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-large"><i class="material-icons">menu</i></a>
                         <a id="logo-container" href="<?= s3MVC_MakeLink('/'); ?>" class="brand-logo left pad-l-2-5-on-med-and-down">
                             <i class="large material-icons">dns</i>Server Info API
@@ -31,14 +31,17 @@
                     </div>
 
                     <!-- bread crumb links -->
+<!--                    
                     <div class="col l4 center hide-on-med-and-down">
                         <a href="#!" class="breadcrumb">First</a>
                         <a href="#!" class="breadcrumb">Second</a>
                         <a href="#!" class="breadcrumb">Third</a>
                     </div>
+-->
 
+                    
                     <!-- login / logout button -->
-                    <div class="col s12 l5">
+                    <div class="col s12 l7">
                         <ul class="right">
                             <?php if ($__is_logged_in): ?>
                                 <li>
@@ -85,8 +88,12 @@
         </nav>
         
         <ul id="slide-out" class="sidenav">
-          <li><a href="#!">First Sidebar Link</a></li>
-          <li><a href="#!">Second Sidebar Link</a></li>
+            <?php if ($__is_logged_in): ?>
+                <li>
+                    <a href="<?= s3MVC_MakeLink("/token-usage/index"); ?>">Usage of My Tokens</a>
+                </li>
+            <?php endif; // if ($__is_logged_in) ?>
+            <li><a href="#!">Second Sidebar Link</a></li>
         </ul>
 
         <div class="row" id="main-content-div">

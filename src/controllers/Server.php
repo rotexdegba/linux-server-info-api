@@ -56,7 +56,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionIndex() {
         
-        $systemOverviewData = $this->generateSystemOverviewData()['system_overview_schema'];
+        $systemOverviewData = $this->generateSystemOverviewData();
 //s3MVC_DumpVar($systemOverviewData);
 
         $viewData = [

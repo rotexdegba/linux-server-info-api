@@ -46,7 +46,7 @@
                             <?php if ($__is_logged_in): ?>
                                 <li>
                                     <a  class="waves-effect waves-light btn light-blue darken-4  tooltipped"
-                                         data-position="bottom" data-tooltip="<?= $__logged_in_user_name; ?>"
+                                         data-position="bottom" data-tooltip="<?= $__logged_in_user_name; ?>'s Tokens"
                                         href="<?= s3MVC_MakeLink("/tokens/my-tokens"); ?>"
                                     >
                                         <i class="material-icons right">vpn_key</i>My Tokens
@@ -93,7 +93,7 @@
                     <a href="<?= s3MVC_MakeLink("/token-usage/index"); ?>">Usage of My Tokens</a>
                 </li>
             <?php endif; // if ($__is_logged_in) ?>
-            <li><a href="#!">Second Sidebar Link</a></li>
+                <li><a href="#!" onclick="alert('Coming Soon!');">API Documentation</a></li>
         </ul>
 
         <div class="row" id="main-content-div">

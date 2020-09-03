@@ -13,3 +13,6 @@
 * Test by running the dev server
     - php -S 0.0.0.0:8888 -t public
 
+# API Documentation
+
+* Documentation for the API end points can be found [here](./docs/index.md)

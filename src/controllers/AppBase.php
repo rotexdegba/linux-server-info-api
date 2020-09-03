@@ -469,7 +469,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                'status_code' => array_key_exists($httpStatusCode, static::HTTP_STATUS_INFO) ? $httpStatusCode : static::HTTP_STATUS_OK, 
                'status_desc' => array_key_exists($httpStatusCode, static::HTTP_STATUS_INFO) ? static::HTTP_STATUS_INFO[$httpStatusCode] : static::HTTP_STATUS_INFO[static::HTTP_STATUS_OK], 
                       'data' => [], 
-            'time_generated' => (new DateTime())->format('D, j M Y H:i:s T')
+            'time_generated' => (new DateTime())->format('c')
         ];
         
         if($httpStatusCode === static::HTTP_STATUS_OK) {

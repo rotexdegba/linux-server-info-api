@@ -567,7 +567,12 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $this->isLoggedIn() || $this->hasValidToken();
     }
     
-    protected function logTokenUsage() {
+    /**
+     * 
+     * @param int $httpStatusCode must be one of 200, 401, 403, 404, 405, 429 or 500
+     * @param string $optionalErrorMessage
+     */
+    protected function logTokenUsage(int $httpStatusCode, string $optionalErrorMessage='') {
         
         if($this->hasValidToken()) {
             
@@ -595,6 +600,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 $newRecord->date_time_of_request = date('Y-m-d H:i:s');
                 $newRecord->request_full_details = Utils::psr7RequestObjToString($this->request);
                 $newRecord->requesters_ip = $ipDetector->getDetectedIp($this->request);
+                $newRecord->http_status_code = $httpStatusCode;
+                $newRecord->request_error_details = $optionalErrorMessage;
                 
                 try {
                     $atlasObj->insert($newRecord);

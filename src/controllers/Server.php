@@ -163,10 +163,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateSystemOverviewData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -179,10 +179,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateCpuInfoData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -195,10 +195,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generatePciAndUsbHardwareInfoData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -211,10 +211,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateSoundCardInfoData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -227,10 +227,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateDiskDrivesData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -243,10 +243,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateDiskMountsData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -259,10 +259,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateNetworkInfoData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -275,10 +275,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateProcessData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }
@@ -291,10 +291,10 @@ class Server extends \Lsia\Controllers\AppBase
                  ->write(
                     $this->generateApiJsonResponse(
                             $this->generateServicesData(), 
-                            $this->getApiHttpStatusCodeForResponse(['GET'])
+                            $statusCode=$this->getApiHttpStatusCodeForResponse(['GET'])
                         )
                   );
-        $this->logTokenUsage();
+        $this->logTokenUsage($statusCode);
         
         return $response;
     }

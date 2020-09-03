@@ -15,6 +15,8 @@ use Atlas\Table\Row;
  * @property mixed $date_time_of_request VARCHAR(255) NOT NULL
  * @property mixed $request_full_details TEXT NOT NULL
  * @property mixed $requesters_ip VARCHAR(255) NOT NULL
+ * @property mixed $http_status_code VARCHAR(3) NOT NULL
+ * @property mixed $request_error_details TEXT
  */
 class TokenUsageRow extends Row
 {
@@ -25,5 +27,7 @@ class TokenUsageRow extends Row
         'date_time_of_request' => '0000-00-00 00:00:00',
         'request_full_details' => null,
         'requesters_ip' => 'NOIP',
+        'http_status_code' => '200',
+        'request_error_details' => null,
     ];
 }

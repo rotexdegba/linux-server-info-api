@@ -88,6 +88,28 @@ class TokenUsageTable extends Table
             'primary' => false,
             'options' => null,
         ],
+        'http_status_code' => [
+            'name' => 'http_status_code',
+            'type' => 'VARCHAR',
+            'size' => 3,
+            'scale' => null,
+            'notnull' => true,
+            'default' => '200',
+            'autoinc' => false,
+            'primary' => false,
+            'options' => null,
+        ],
+        'request_error_details' => [
+            'name' => 'request_error_details',
+            'type' => 'TEXT',
+            'size' => null,
+            'scale' => null,
+            'notnull' => false,
+            'default' => null,
+            'autoinc' => false,
+            'primary' => false,
+            'options' => null,
+        ],
     ];
 
     const COLUMN_NAMES = [
@@ -97,6 +119,8 @@ class TokenUsageTable extends Table
         'date_time_of_request',
         'request_full_details',
         'requesters_ip',
+        'http_status_code',
+        'request_error_details',
     ];
 
     const COLUMN_DEFAULTS = [
@@ -106,6 +130,8 @@ class TokenUsageTable extends Table
         'date_time_of_request' => '0000-00-00 00:00:00',
         'request_full_details' => null,
         'requesters_ip' => 'NOIP',
+        'http_status_code' => '200',
+        'request_error_details' => null,
     ];
 
     const PRIMARY_KEY = [

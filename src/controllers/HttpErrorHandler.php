@@ -5,6 +5,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use Lsia\Utils;
+
 /**
  * 
  * Description of HttpErrorHandler goes here
@@ -49,6 +51,48 @@ class HttpErrorHandler extends AppBase
     public function actionIndex() {
         
         return $this->redirect(s3MVC_MakeLink('/'));
+    }
+    
+    public function actionHttpNotFound($_404_page_content = null, $_404_additional_log_message = null, $render_layout = true) {
+        
+        if(!$this->isLoggedIn() && $this->hasValidToken()) {
+            
+            $response = $this->response->withHeader('Content-type', 'application/json');
+
+            $response->getBody()
+                     ->write(
+                        $this->generateApiJsonResponse(
+                                [], 
+                                static::HTTP_STATUS_NOT_FOUND
+                            )
+                      );
+            $this->logTokenUsage(static::HTTP_STATUS_NOT_FOUND);
+
+            return $response;
+        }
+        
+        return parent::actionHttpNotFound($_404_page_content, $_404_additional_log_message, $render_layout);
+    }
+    
+    public function generateServerErrorResponse(\Exception $exception, ServerRequestInterface $req = null, ResponseInterface $res = null, $render_layout = true) {
+                
+        if(!$this->isLoggedIn() && $this->hasValidToken()) {
+            
+            $response = $this->response->withHeader('Content-type', 'application/json');
+
+            $response->getBody()
+                     ->write(
+                        $this->generateApiJsonResponse(
+                                [], 
+                                static::HTTP_STATUS_INTERNAL_SERVER_ERROR
+                            )
+                      );
+            $this->logTokenUsage(static::HTTP_STATUS_INTERNAL_SERVER_ERROR, Utils::getThrowableAsStr($exception));
+
+            return $response;
+        }
+        
+        return parent::generateServerErrorResponse($exception, $req, $res, $render_layout);
     }
     
     public function preAction() {

@@ -10,16 +10,20 @@ class ExtendedWindows extends \Ginfo\OS\Windows {
 
     protected function getInfo(string $name): ?array
     {
-//        if (\array_key_exists($name, $this->infoCache)) {
-//            
-//            return $this->infoCache[$name];
-//        }
+       if ($this->hasInInfoCache($name)) {
+           
+           return $this->getFromInfoCache($name);
+       }
 
         $result = \json_decode(
             shell_exec('chcp 65001 | powershell -file '. S3MVC_APP_ROOT_PATH.'\\vendor\\gemorroj\\ginfo\\bin\\windows\\'.$name.'.ps1'), 
             true
         );
 
-        return \is_scalar($result) ? [$result] : $result;
+        $finalResult = \is_scalar($result) ? [$result] : $result;
+
+        $this->addToInfoCache($name, $finalResult);
+
+        return $finalResult;
     }
 }

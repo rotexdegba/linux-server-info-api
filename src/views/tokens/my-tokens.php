@@ -48,7 +48,16 @@
                                 </a>
                             </li>
                             
-                            <li class="collection-item" style="word-wrap: break-word;"><strong>Token:</strong> <?= $tokenRecord->token; ?></li>
+                            <li class="collection-item" style="word-wrap: break-word; width: 100%;">
+                                <strong>Token:</strong> 
+                                <span id="token-span-<?= $tokenRecord->id; ?>"><?= $tokenRecord->token; ?></span>
+                                <button class="right" 
+                                        onclick="copyToken('token-span-<?= $tokenRecord->id; ?>');"
+                                >
+                                    Copy<i class="material-icons right">content_copy</i>
+                                </button>
+                            </li>
+                            
                             <li class="collection-item"><strong>Date Created:</strong> <?= $tokenRecord->date_created . date(' T'); ?></li>
                             <li class="collection-item"><strong>Last Edited:</strong> <?= $tokenRecord->date_last_edited . date(' T'); ?></li>
                             <li class="collection-item"><strong>Creator's IP:</strong> <?= $tokenRecord->creators_ip; ?></li>
@@ -131,4 +140,15 @@
             //elmnt.scrollIntoView();
         <?php endif; ?>
     });
+    
+    function copyToken(tokenSpanId) {
+        var copyText = document.getElementById(tokenSpanId);
+        var textArea = document.createElement("textarea");
+        textArea.value = copyText.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("Copy");
+        textArea.remove();
+        M.toast({html: 'Copied!'})
+    }
 </script>

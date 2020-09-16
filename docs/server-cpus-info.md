@@ -6,7 +6,30 @@ This endpoint retrieves and returns all CPU information on the machine this web-
 
 ## Sample Request
 
+### Curl
 `curl --location --request GET "http://your-server.com/server/cpus-info?token=<TOKEN_VALUE>"`
+
+### PHP
+
+```PHP
+$curl = curl_init();
+
+curl_setopt_array($curl, [
+  CURLOPT_URL => "http://your-server.com/server/cpus-info?token=<TOKEN_VALUE>",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "GET"
+]);
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+echo $response;
+```
 
 > **`your-server.com`** should be replaced with the name or IP address of the server this application is running on
 

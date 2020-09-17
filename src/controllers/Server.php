@@ -157,7 +157,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionServerOverview() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
         
         $response->getBody()
                  ->write(
@@ -173,7 +174,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionCpusInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(
@@ -189,7 +191,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionHardwareInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(
@@ -205,7 +208,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionSoundCardInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(
@@ -221,7 +225,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionDiskDrivesInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(
@@ -237,7 +242,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionDiskMountsInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
         
         $response->getBody()
                  ->write(
@@ -253,7 +259,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionNetworkInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(
@@ -269,7 +276,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionProcesses() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(
@@ -285,7 +293,8 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionServices() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json');
+        $response = $this->response->withHeader('Content-type', 'application/json')
+                                   ->withHeader('Access-Control-Allow-Origin', '*');
 
         $response->getBody()
                  ->write(

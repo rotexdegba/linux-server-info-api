@@ -57,7 +57,8 @@ class HttpErrorHandler extends AppBase
         
         if(!$this->isLoggedIn() && $this->hasValidToken()) {
             
-            $response = $this->response->withHeader('Content-type', 'application/json');
+            $response = $this->response->withHeader('Content-type', 'application/json')
+                                       ->withHeader('Access-Control-Allow-Origin', '*');
 
             $response->getBody()
                      ->write(
@@ -78,7 +79,8 @@ class HttpErrorHandler extends AppBase
                 
         if(!$this->isLoggedIn() && $this->hasValidToken()) {
             
-            $response = $this->response->withHeader('Content-type', 'application/json');
+            $response = $this->response->withHeader('Content-type', 'application/json')
+                                       ->withHeader('Access-Control-Allow-Origin', '*');
 
             $response->getBody()
                      ->write(

@@ -169,20 +169,6 @@ puts response.read_body
          ]
       },
       {
-         "name":"BIOS_RVY (Fixed drive)",
-         "mount_point":"\\\\?\\Volume{0163eb95-3511-4eb2-bbbc-b91bc862e814}\\",
-         "type":"NTFS",
-         "size_in_bytes":20039331840,
-         "used_bytes":19252961280,
-         "free_bytes":786370560,
-         "free_percent":4,
-         "used_percent":96,
-         "options":[
-            "automount",
-            "indexed"
-         ]
-      },
-      {
          "name":"OS_Install (Fixed drive)",
          "mount_point":"C:\\",
          "type":"NTFS",
@@ -196,34 +182,7 @@ puts response.read_body
             "boot",
             "indexed"
          ]
-      },
-      {
-         "name":" (Fixed drive)",
-         "mount_point":"\\\\?\\Volume{7ca96dc6-09ac-4960-b372-16fdadc431db}\\",
-         "type":"NTFS",
-         "size_in_bytes":1008726016,
-         "used_bytes":580677632,
-         "free_bytes":428048384,
-         "free_percent":42,
-         "used_percent":57.99999999999999,
-         "options":[
-            "automount",
-            "indexed"
-         ]
-      },
-      {
-         "name":"SYSTEM (Fixed drive)",
-         "mount_point":"\\\\?\\Volume{5a55bc14-8954-470a-9e47-4e2320cc3e49}\\",
-         "type":"FAT32",
-         "size_in_bytes":310378496,
-         "used_bytes":54796288,
-         "free_bytes":255582208,
-         "free_percent":82,
-         "used_percent":18,
-         "options":[
-            "automount"
-         ]
-      },
+      },]
       {
          "name":" (CD-ROM)",
          "mount_point":"E:\\",

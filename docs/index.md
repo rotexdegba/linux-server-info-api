@@ -56,6 +56,7 @@ The `data` property always contains the requested data if the request was succes
 Below are the status codes and descriptions that can be returned in response to client requests to this application:
 
 
+<div id="status-codes">&nbsp;</div>
 
 | Status Code | Status Description | Long Description |
 | --- | --- | --- |

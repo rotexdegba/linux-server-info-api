@@ -25,7 +25,7 @@ When creating a token via this application's web interface, there are two fields
 
 All API responses are in **JSON** ([Javascript Object Notation](https://en.wikipedia.org/wiki/JSON)) format. Every response has the following schema structure:
 
-```
+```javascript
 {
     "status_code": 200,
     "status_desc": "Ok",

@@ -217,4 +217,4 @@ puts response.read_body
 ## Response Definitions
 
 The following table describes each item in the response.
-[here](index.md#status-codes)
+[here](http-status-codes.md)

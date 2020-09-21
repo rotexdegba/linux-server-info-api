@@ -1,3 +1,5 @@
+[Documentation Home](index.md)
+
 # /server/cpus-info
 
 This endpoint retrieves and returns all CPU information on the machine this web-application is running on.

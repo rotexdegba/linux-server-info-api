@@ -4,15 +4,13 @@
 
 ## Object Definition
 
-| Property | Description | Data Type |
-| --- | --- | --- |
-| cpu_number | A non-negative integer identification number for the CPU represented by this object| Integer |
-| usage_percentage | A float number between **0.0** and **100.0** representing the usage percentage of the CPU represented by this object. A value of **-1** or **-1.0** means that the usage percentage could not be retrieved. | Float |
-| vendor | The name of the vendor that manufactured the CPU. Could be empty if the name could not be retrieved. | String |
-| model | A string representing the CPU's model. Could be empty if the model could not be retrieved. | String |
-| speed_mhz | A non-negative float number representing the CPU speed in MegaHertz. A value of **-1** or **-1.0** means that the CPU speed  could not be retrieved. | Float |
-
 
 | Property | Description | Data Type |
 | --- | --- | --- |
-| name | The name of the vendor that manufactured the CPU. Could be empty if the name could not be retrieved.| Integer |
+| name | The name of the drive represented by this object. Could be empty if the name could not be retrieved.| String |
+| vendor | The name of the manufacturer of the drive represented by this object. Could be empty if the name could not be retrieved. | String |
+| device | A unique string identifier representing the drive as a unique device in the system. Could be empty if value can't be retrieved | String |
+| bytes_read | Total non-negative number of bytes read from the device. A value of **-1** or **-1.0** means that the value could not be retrieved. | Float |
+| bytes_written | Total non-negative number of bytes written to the device. A value of **-1** or **-1.0** means that the value could not be retrieved. | Float |
+| size_in_bytes | Total non-negative number of storage capacity in bytes of the device. A value of **-1** or **-1.0** means that the value could not be retrieved. | Float |
+| partitions | An array of [Disk Drive Partition Info](disk-drive-partition-info.md) objects each representing a partition of a disk drive | Array |

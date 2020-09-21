@@ -182,7 +182,7 @@ puts response.read_body
             "boot",
             "indexed"
          ]
-      },]
+      },
       {
          "name":" (CD-ROM)",
          "mount_point":"E:\\",

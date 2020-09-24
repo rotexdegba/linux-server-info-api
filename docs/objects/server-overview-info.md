@@ -1,4 +1,4 @@
-[Documentation Home](index.md)
+[Documentation Home](../index.md)
 
 # Server Overview Info
 

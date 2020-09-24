@@ -1,4 +1,4 @@
-[Documentation Home](index.md)
+[Documentation Home](../index.md)
 
 # Disk Drive Info
 

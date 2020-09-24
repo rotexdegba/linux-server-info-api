@@ -1,4 +1,4 @@
-[Documentation Home](../index.md)
+[Documentation Home](../index.md) > [/server/cpus-info](../server-cpus-info.md)
 
 # CPU Info
 

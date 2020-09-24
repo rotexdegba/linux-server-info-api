@@ -1,4 +1,4 @@
-[Documentation Home](../index.md)
+[Documentation Home](../index.md) > [/server/network-info](../server-network-info.md)
 
 # Network Info
 

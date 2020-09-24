@@ -2,7 +2,7 @@
 
 # /server/services
 
-This endpoint retrieves and returns all Process information on the machine this web-application is running on.
+This endpoint retrieves and returns all Service information on the machine this web-application is running on.
 
 **Allowed HTTP Methods:** GET
 

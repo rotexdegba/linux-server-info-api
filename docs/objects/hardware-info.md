@@ -1,4 +1,4 @@
-[Documentation Home](../index.md)
+[Documentation Home](../index.md) > [/server/hardware-info](../server-hardware-info.md)
 
 # Hardware Info
 

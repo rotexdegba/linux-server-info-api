@@ -1,4 +1,4 @@
-[Documentation Home](../index.md) > [Disk Drive Info](disk-drive-info.md)
+[Documentation Home](../index.md) > [/server/disk-drives-info](../server-disk-drives-info.md) > [Disk Drive Info](disk-drive-info.md)
 
 # Disk Drive Partition Info
 

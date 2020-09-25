@@ -1,8 +1,9 @@
 [Documentation Home](../index.md) > [/server/disk-drives-info](../server-disk-drives-info.md) > [Disk Drive Info](disk-drive-info.md)
 
-# Disk Drive Partition Info
+## Disk Drive Partition Info
+----
 
-## Object Definition
+### Object Definition
 
 
 | Property | Description | Data Type |

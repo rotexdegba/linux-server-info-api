@@ -1,8 +1,9 @@
 [Documentation Home](../index.md) > [/server/network-info](../server-network-info.md)
 
-# Network Info
+## Network Info
+----
 
-## Object Definition
+### Object Definition
 
 
 | Property | Description | Data Type |

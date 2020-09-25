@@ -447,3 +447,8 @@ $container['ip_detector'] = function ($c) {
     
     return new \Lsia\ClientIpDetector(false);
 };
+
+$container['md_2_html_converter'] = function ($c) {
+    
+    return new \League\CommonMark\GithubFlavoredMarkdownConverter();
+};

@@ -1,8 +1,9 @@
 [Documentation Home](../index.md) > [/server/sound-card-info](../server-sound-card-info.md)
 
-# Sound Card Info
+## Sound Card Info
+----
 
-## Object Definition
+### Object Definition
 
 
 | Property | Description | Data Type |

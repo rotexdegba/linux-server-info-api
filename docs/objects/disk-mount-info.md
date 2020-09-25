@@ -1,8 +1,9 @@
 [Documentation Home](../index.md) > [/server/disk-mounts-info](../server-disk-mounts-info.md)
 
-# Disk Mount Info
+## Disk Mount Info
+----
 
-## Object Definition
+### Object Definition
 
 
 | Property | Description | Data Type |

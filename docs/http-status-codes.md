@@ -1,6 +1,6 @@
 [Documentation Home](index.md)
 
-# Supported HTTP Status Codes and Descriptions
+## Supported HTTP Status Codes and Descriptions
 
 | Status Code | Status Description | Long Description |
 | --- | --- | --- |

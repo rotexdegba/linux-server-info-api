@@ -99,12 +99,16 @@
         </nav>
         
         <ul id="slide-out" class="sidenav">
+            
+            <li><a href="<?= s3MVC_MakeLink("/"); ?>">Home</a></li>
+            
             <?php if ($__is_logged_in): ?>
                 <li>
                     <a href="<?= s3MVC_MakeLink("/token-usage/index"); ?>">Usage of My Tokens</a>
                 </li>
             <?php endif; // if ($__is_logged_in) ?>
-                <li><a href="#!" onclick="alert('Coming Soon!');">API Documentation</a></li>
+            
+            <li><a href="<?= s3MVC_MakeLink("/api-docs"); ?>">API Documentation</a></li>
         </ul>
 
         <div class="row" id="main-content-div">
@@ -151,7 +155,9 @@
                     </div>
                     <br><br>
                 </div>
+                
             </div>
+            
         </div>
 
         <footer class="page-footer orange">

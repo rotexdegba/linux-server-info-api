@@ -1,8 +1,9 @@
 [Documentation Home](../index.md) > [/server/cpus-info](../server-cpus-info.md)
 
-# CPU Info
+## CPU Info
+----
 
-## Object Definition
+### Object Definition
 
 | Property | Description | Data Type |
 | --- | --- | --- |

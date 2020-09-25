@@ -1,20 +1,20 @@
 [Documentation Home](index.md)
 
-# /server/server-overview
+## /server/server-overview
 
 This endpoint retrieves basic system information such as the Operating System name and version, Total RAM, Free RAM, Used RAM, etc on the machine this web-application is running on.
 
 **Allowed HTTP Methods:** GET
 
-## Sample Request
+### Sample Request
 
-### Curl
+#### Curl
 
 ```
 curl --location --request GET "http://your-server.com/server/server-overview?token=<TOKEN_VALUE>"
 ```
 
-### Javascript Fetch API
+#### Javascript Fetch API
 
 ```javascript
 var requestOptions = {
@@ -28,7 +28,7 @@ fetch("http://your-server.com/server/server-overview?token=<TOKEN_VALUE>", reque
    .catch(error => console.log('error', error));
 ```
 
-### Javascript jQuery
+#### Javascript jQuery
 
 ```javascript
 var settings = {
@@ -42,7 +42,7 @@ $.ajax(settings).done(function (response) {
 });
 ```
 
-### Javascript XHR
+#### Javascript XHR
 
 ```javascript
 var xhr = new XMLHttpRequest();
@@ -58,7 +58,7 @@ xhr.open("GET", "http://your-server.com/server/server-overview?token=<TOKEN_VALU
 xhr.send();
 ```
 
-### Nodejs
+#### Nodejs
 
 ```javascript
 var http = require('http');
@@ -91,7 +91,7 @@ var req = http.request(options, function (res) {
 req.end();
 ```
 
-### PHP
+#### PHP
 
 ```PHP
 $curl = curl_init();
@@ -113,7 +113,7 @@ curl_close($curl);
 echo $response;
 ```
 
-### Python
+#### Python
 
 ```python
 import http.client
@@ -126,7 +126,7 @@ data = res.read()
 print(data.decode("utf-8"))
 ```
 
-### Ruby
+#### Ruby
 
 ```ruby
 require "uri"
@@ -147,7 +147,7 @@ puts response.read_body
 > **NOTE:** You will have to tweak these examples to support **HTTPS** if this application is running via **HTTPS**
 
 
-## Sample Response
+### Sample Response
 
 ```javascript
 {
@@ -221,7 +221,7 @@ puts response.read_body
 ```
 
 
-## Response Definitions
+### Response Definitions
 
 The following table describes each item in the response.
 

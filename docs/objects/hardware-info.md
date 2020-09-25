@@ -1,8 +1,9 @@
 [Documentation Home](../index.md) > [/server/hardware-info](../server-hardware-info.md)
 
-# Hardware Info
+## Hardware Info
+----
 
-## Object Definition
+### Object Definition
 
 
 | Property | Description | Data Type |

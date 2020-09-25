@@ -505,7 +505,8 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 
             } else {
                 
-                if($this->hasTokenExceededDailyRequestLimit()) {
+                // Only check token daily limit for non-logged in users
+                if(!$this->isLoggedIn() && $this->hasTokenExceededDailyRequestLimit()) {
                     
                     $statusCode = static::HTTP_STATUS_DAILY_RATE_LIMIT_EXCEEDED;
                 }
@@ -574,7 +575,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
      */
     protected function logTokenUsage(int $httpStatusCode, string $optionalErrorMessage='') {
         
-        if($this->hasValidToken()) {
+        if($this->hasToken()) {
             
             $token = s3MVC_GetSuperGlobal('get', static::API_TOKEN_KEY_NAME, null);
             
@@ -588,12 +589,17 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
             if(
                 $tokenRecord instanceof TokenRecord 
                 && $this->request->getUri() instanceof UriInterface
-            ) {                
+            ) {
                 /** @var \Lsia\Atlas\Models\TokenUsage\TokenUsageRecord $newRecord */
                 $newRecord = $atlasObj->newRecord(TokenUsage::class);
                 
                 /** @var \Lsia\ClientIpDetector $ipDetector */
                 $ipDetector = $this->container->get('ip_detector');
+                
+                if($optionalErrorMessage === '' && $httpStatusCode !== 200) {
+                    
+                    $optionalErrorMessage = static::HTTP_STATUS_INFO[$httpStatusCode];
+                }
                 
                 $newRecord->token_id = $tokenRecord->id;
                 $newRecord->request_uri = $this->request->getUri()->getPath() ?: '/';
@@ -614,7 +620,40 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         } // if($this->hasValidToken())
     }
     
-    protected function hasValidToken() {
+    /**
+     * 
+     * Do we have a valid active or expired token
+     * 
+     * @return bool
+     */
+    protected function hasToken(): bool {
+        
+        $hasToken = false;
+        
+        $token = s3MVC_GetSuperGlobal('get', static::API_TOKEN_KEY_NAME, null);
+        
+        if(!is_null($token) && is_string($token) && !Utils::isEmptyString($token)) {
+            
+            /** @var \Atlas\Orm\Atlas $atlasObj */
+            $atlasObj = $this->container->get('atlas');
+            
+            $tokenRecord = $atlasObj->select(Token::class)
+                                    ->where('token = ', $token)
+                                    ->fetchRecord();
+
+            $hasToken = ($tokenRecord instanceof TokenRecord);
+        }
+        
+        return $hasToken;
+    }
+    
+    /**
+     * 
+     * Do we have a valid active token (not an expired or non existent one)
+     * 
+     * @return bool
+     */
+    protected function hasValidToken(): bool {
         
         // Get the user supplied token named by the value of 
         // static::API_TOKEN_KEY_NAME

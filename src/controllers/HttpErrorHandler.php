@@ -55,7 +55,7 @@ class HttpErrorHandler extends AppBase
     
     public function actionHttpNotFound($_404_page_content = null, $_404_additional_log_message = null, $render_layout = true) {
         
-        if(!$this->isLoggedIn() && $this->hasValidToken()) {
+        if($this->hasToken()) { // has a valid active or expired token
             
             $response = $this->response->withHeader('Content-type', 'application/json')
                                        ->withHeader('Access-Control-Allow-Origin', '*');

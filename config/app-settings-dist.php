@@ -38,6 +38,10 @@ return [
         // 
         //////////////////////////////////////////////////////////////////////////////
         
+        // specify domain from which cross origin requests can be made
+        // specify false to disable CORS
+        'Access-Control-Allow-Origin' => '*',
+        
         'vespula_auth_adapter_obj' => function(): Vespula\Auth\Auth {
     
             // Using this static singleton pattern

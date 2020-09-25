@@ -157,8 +157,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionServerOverview() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
         
         $response->getBody()
                  ->write(
@@ -174,8 +173,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionCpusInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -191,8 +189,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionHardwareInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -208,8 +205,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionSoundCardInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -225,8 +221,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionDiskDrivesInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -242,8 +237,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionDiskMountsInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
         
         $response->getBody()
                  ->write(
@@ -259,8 +253,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionNetworkInfo() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -276,8 +269,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionProcesses() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -293,8 +285,7 @@ class Server extends \Lsia\Controllers\AppBase
     
     public function actionServices() {
 
-        $response = $this->response->withHeader('Content-type', 'application/json')
-                                   ->withHeader('Access-Control-Allow-Origin', '*');
+        $response = $this->response->withHeader('Content-type', 'application/json');
 
         $response->getBody()
                  ->write(
@@ -320,6 +311,14 @@ class Server extends \Lsia\Controllers\AppBase
         
         // add code that you need to be executed after each controller action method is executed
         $new_response = parent::postAction($response);
+        
+        if( $this->container->get('settings')['Access-Control-Allow-Origin'] !== false ) {
+            
+            $new_response = $new_response->withHeader(
+                'Access-Control-Allow-Origin', 
+                $this->container->get('settings')['Access-Control-Allow-Origin']
+            );
+        }
         
         return $new_response;
     }

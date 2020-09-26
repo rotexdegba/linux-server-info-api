@@ -166,21 +166,22 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
             
             if ( !$token->isValid($csrf_value) ) {
                                 
-                $this->logError( 'Possible Cross-Site Request Forgery.', 'Possible Cross-Site Request Forgery.');
-                
-                $new_response = 
-                    $this->response
-                         ->withBody($this->container->get('new_response_body'));
-
-                //generate error page content using the layout and write it into the response body
-                $layout_data = [];
-                $layout_data['content'] = "Bad Request. Possible cross-site request forgery.";
-                $error_page = $this->renderLayout( $this->layout_template_file_name, $layout_data );
-                $new_response->getBody()->write( $error_page );
-                $this->response = $new_response->withStatus(403)
-                                               ->withHeader('Content-Type', 'text/html');
-                $response = $this->response;
+                $this->logError('Possible Cross-Site Request Forgery.');
+                $response = $this->generateResponse('Possible Cross-Site Request Forgery.', 403, true);
             }
+            
+        } else if(
+            $this->isPostRequestFromWebForm() 
+            && !$this->isLoggedIn()
+            && s3MVC_GetSuperGlobal('post', static::CSRF_FORM_FIELD_KEY, null) !== null
+            && $this->action_name_from_uri !== 'login'
+            && $this->action_name_from_uri !== 'action-login'
+            && $this->action_name_from_uri !== 'logout'
+            && $this->action_name_from_uri !== 'action-logout'
+        ) {
+            // Token submitted but user is logged out
+            $this->logError('Possible Cross-Site Request Forgery. Form submitted while logged out.');
+            $response = $this->generateResponse('Possible Cross-Site Request Forgery. Form submitted while logged out.', 403, true);
         }
         
         return $response;
@@ -315,34 +316,31 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $this->aura_session_segment->getFlash(static::FLASH_MESSAGE_CSS_CLASS_KEY, null);
     }
     
-    
-    public function logError($msg, $email_subject, $send_mail=true) {
+    protected function createLogMessage($msg, $severity='Notice') {
         
-        $container = $this->container;
-
-        $req_obj_as_str_uncleaned = 
-            Utils::psr7RequestObjToString($this->request) . PHP_EOL;
-
-        //scrub password if this was a post from the login form
-        $req_obj_as_str = preg_replace('/&password=[^&\n]*/i', '&password=SCRUBBED_NOTHING_TOO_SEE_HERE', $req_obj_as_str_uncleaned);
-
-//        $to_addrs = [
-//            'something@hotmail.com',
-//        ];
-        $message_body = "Error Occurred: "
-                        . $this->current_uri
-                        . PHP_EOL. "Message: $msg" 
-                        . PHP_EOL. str_replace(PHP_EOL, PHP_EOL. "\t\t\t", "<pre>\t\t\t" . $req_obj_as_str . '</pre>');
-                
-//        $from_addr = 'donotreply@serverapi.com';
-//        $subject = 'Server Info API Error:' . $email_subject;
+        $req_as_str = 
+            Utils::psr7RequestObjToString(
+                $this->request,
+                ['route','routeInfo'],
+                true,  //$skip_req_attribs
+                true,  //$skip_req_body cos posted password might be there
+                true,  //$skip_req_cookie_params
+                false, //$skip_req_headers
+                false, //$skip_req_method
+                false, //$skip_req_proto_ver
+                true,  //$skip_req_query_params would be visible in the url / uri
+                true,  //$skip_req_target would be visible in the url / uri
+                false, //$skip_req_server_params
+                true,  //$skip_req_uploaded_files
+                false  //$skip_req_uri
+            ) . PHP_EOL;
         
-        $container['logger']->error( str_replace(['<pre>', '</pre>'], ['', ''], $message_body) );
-        
-//        ($send_mail && $this->isProductionEnvironment())
-//            && $this->sendMailViaAwsSesSmtp(
-//                    $to_addrs, nl2br($message_body), $from_addr, $subject
-//                );
+        return "$severity: "
+                . $this->current_uri
+                . PHP_EOL. "\t\tMessage:" 
+                . PHP_EOL. "\t\t\t" . str_replace(PHP_EOL, "\t\t\t", $msg)
+                . PHP_EOL . PHP_EOL. "Request Details:"
+                . PHP_EOL . str_replace(PHP_EOL, PHP_EOL. "\t\t\t", "\t\t\t".$req_as_str);
     }
     
     protected function isProductionEnvironment() {
@@ -350,62 +348,19 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return s3MVC_GetCurrentAppEnvironment() === S3MVC_APP_ENV_PRODUCTION;
     }
     
+    public function logError($msg) {
+
+        $this->container['logger']->error($this->createLogMessage($msg, 'Error'));
+    }
+
     public function logNotice($msg) {
         
-        $req_as_str = 
-            Utils::psr7RequestObjToString(
-                $this->request,
-                ['route','routeInfo'],
-                true,  //$skip_req_attribs
-                true,  //$skip_req_body cos posted password might be there
-                true,  //$skip_req_cookie_params
-                false, //$skip_req_headers
-                false, //$skip_req_method
-                false, //$skip_req_proto_ver
-                true,  //$skip_req_query_params would be visible in the url / uri
-                true,  //$skip_req_target would be visible in the url / uri
-                false, //$skip_req_server_params
-                true,  //$skip_req_uploaded_files
-                false  //$skip_req_uri
-            ) . PHP_EOL;
-        
-        $message_body = "Notice: "
-                        . $this->current_uri
-                        . PHP_EOL. "\t\tMessage:" 
-                        . PHP_EOL. "\t\t\t" . str_replace(PHP_EOL, "\t\t\t", $msg)
-                        . PHP_EOL . PHP_EOL. "Request Details:"
-                        . PHP_EOL . str_replace(PHP_EOL, PHP_EOL. "\t\t\t", "\t\t\t".$req_as_str);
-        
-        $this->container['logger']->notice( $message_body );
+        $this->container['logger']->notice($this->createLogMessage($msg, 'Notice'));
     }
     
     public function logWarning($msg) {
-        
-        $req_as_str = 
-            Utils::psr7RequestObjToString(
-                $this->request,
-                ['route','routeInfo'],
-                true,  //$skip_req_attribs
-                true,  //$skip_req_body cos posted password might be there
-                true,  //$skip_req_cookie_params
-                false, //$skip_req_headers
-                false, //$skip_req_method
-                false, //$skip_req_proto_ver
-                true,  //$skip_req_query_params would be visible in the url / uri
-                true,  //$skip_req_target would be visible in the url / uri
-                false, //$skip_req_server_params
-                true,  //$skip_req_uploaded_files
-                false  //$skip_req_uri
-            ) . PHP_EOL;
-        
-        $message_body = "Warning: "
-                        . $this->current_uri
-                        . PHP_EOL. "\t\tMessage:" 
-                        . PHP_EOL. "\t\t\t" . str_replace(PHP_EOL, "\t\t\t", $msg)
-                        . PHP_EOL . PHP_EOL. "Request Details:"
-                        . PHP_EOL . str_replace(PHP_EOL, PHP_EOL. "\t\t\t", "\t\t\t".$req_as_str);
-                
-        $this->container['logger']->warning( $message_body );
+                        
+        $this->container['logger']->warning($this->createLogMessage($msg, 'Warning'));
     }
     
     protected function getTableColumnNames(string $tableName): array {
@@ -598,7 +553,10 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                 
                 if($optionalErrorMessage === '' && $httpStatusCode !== 200) {
                     
-                    $optionalErrorMessage = static::HTTP_STATUS_INFO[$httpStatusCode];
+                    $optionalErrorMessage = 
+                        (array_key_exists($httpStatusCode, static::HTTP_STATUS_INFO))
+                            ? static::HTTP_STATUS_INFO[$httpStatusCode]
+                            : 'Unknown Error';
                 }
                 
                 $newRecord->token_id = $tokenRecord->id;
@@ -614,7 +572,7 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
                     
                 } catch (\Exception $exc) {
                     
-                    $this->logError($exc->getTraceAsString(), 'Error Saving New TokenUsage Record');
+                    $this->logError('Error Saving New TokenUsage Record: '.PHP_EOL.$exc->getTraceAsString());
                 }
             }
         } // if($this->hasValidToken())

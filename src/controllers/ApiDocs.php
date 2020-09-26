@@ -104,7 +104,7 @@ class ApiDocs extends \Lsia\Controllers\AppBase
         $mdAsStr = $this->loadMarkDownFromDocsFolder($docName.'.md', $subFolder);
         
         $docStr = $mdGenerator->convertToHtml(
-            $this->convertMdLinksToHtmlLinks($mdAsStr)
+            $this->convertMdLinkPathsToHtmlLinkPaths($mdAsStr)
         );
         
         $view_str = $this->renderView('get-doc.php', ['doc'=>$docStr]);
@@ -129,9 +129,13 @@ class ApiDocs extends \Lsia\Controllers\AppBase
         return file_get_contents($path.$fileName);
     }
     
-    protected function convertMdLinksToHtmlLinks(string $markDownContent): string {
+    protected function convertMdLinkPathsToHtmlLinkPaths(string $markDownContent): string {
         
-        return str_replace( array_keys($this->mdToHtmlLinkMap), array_values($this->mdToHtmlLinkMap), $markDownContent);
+        return str_replace( 
+            array_keys($this->mdToHtmlLinkMap), 
+            array_values($this->mdToHtmlLinkMap), 
+            $markDownContent
+        );
     }
     
     public function preAction() {

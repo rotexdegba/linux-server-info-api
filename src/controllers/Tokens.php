@@ -234,7 +234,7 @@ class Tokens extends \Lsia\Controllers\AppBase
                     
                 } catch (\Exception $exc) {
                     
-                    $this->logError($exc->getTraceAsString(), 'Error Saving New Token');
+                    $this->logError('Error Saving New Token: ' . PHP_EOL . $exc->getTraceAsString());
                     $this->setErrorFlashMessage('Token Not Successfully Created!');
                     return $this->redirect(s3MVC_MakeLink('/tokens/my-tokens'));
                 }
@@ -320,7 +320,7 @@ class Tokens extends \Lsia\Controllers\AppBase
                     
                 } catch (\Exception $exc) {
                     
-                    $this->logError($exc->getTraceAsString(), 'Error Updating Token');
+                    $this->logError('Error Updating Token: ' . PHP_EOL . $exc->getTraceAsString());
                     $this->setErrorFlashMessage('Token Not Successfully Updated!');
                     return $this->redirect(s3MVC_MakeLink('/tokens/my-tokens/'.$tokenRecord->id));
                 }
@@ -359,7 +359,7 @@ class Tokens extends \Lsia\Controllers\AppBase
 
         } catch (\Exception $exc) {
 
-            $this->logError($exc->getTraceAsString(), 'Error Deleting Token');
+            $this->logError('Error Deleting Token: ' . PHP_EOL . $exc->getTraceAsString());
             $this->setErrorFlashMessage('Token Not Successfully Deleted!');
             
             return $this->redirect(s3MVC_MakeLink("/tokens/my-tokens/{$id}"));

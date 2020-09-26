@@ -101,7 +101,7 @@ class ExtendedLinux extends \Ginfo\OS\Linux {
         
         return (new Selinux())
             ->setEnabled(array_key_exists('SELinux status', $block) && ('enabled' === $block['SELinux status']))
-            ->setPolicy((array_key_exists('Loaded policy name', $block) && $block['Loaded policy name']) ? $block['Loaded policy name'] : null)
-            ->setMode((array_key_exists('Current mode', $block) && $block['Current mode']) ? $block['Current mode'] : null);
+            ->setPolicy((array_key_exists('Loaded policy name', $block) && $block['Loaded policy name']) ? $block['Loaded policy name'] : '')
+            ->setMode((array_key_exists('Current mode', $block) && $block['Current mode']) ? $block['Current mode'] : '');
     }
 }

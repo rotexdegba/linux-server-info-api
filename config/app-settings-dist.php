@@ -115,11 +115,46 @@ SQL;
         
         'atlas' => [
             'pdo' => [
-                'sqlite:'.dirname(dirname(__FILE__))."{$app_settings_ds}storage{$app_settings_ds}sqlite{$app_settings_ds}token_management_dev.sqlite"
+                'sqlite:'.dirname(dirname(__FILE__))."{$app_settings_ds}storage{$app_settings_ds}sqlite{$app_settings_ds}server_info.sqlite"
             ],
             'namespace' => 'Lsia\\Atlas\\Models',
             'directory' => dirname(dirname(__FILE__))."{$app_settings_ds}src{$app_settings_ds}models{$app_settings_ds}atlas",
         ],
+        
+        //////////////////////
+        // Phinx Settings
+        //////////////////////
+        'db_adapter' => 'sqlite',
+        
+        // db file name including path and excluding suffix if using sqlite 
+        // or db name if using non-sqlite adapter
+        'db_name' => dirname(dirname(__FILE__))."{$app_settings_ds}storage{$app_settings_ds}sqlite{$app_settings_ds}server_info",
+        
+        'db_charset' => 'utf8',
+        
+        // non- sqlite adapters, comment out if using sqlite adapter
+//        'db_host' => '',
+//        'db_uname' => '',
+//        'db_passwd' => '',
+//        'db_port' => '',
+        
+        /////////////////////////
+        // End of Phinx Settings
+        /////////////////////////
+        
+        /////////////////////////
+        // SMTP Settings
+        /////////////////////////
+          'smtp_server' => null, //string  like smtp.example.com
+            'smtp_port' => null, // integer like 25
+        'smtp_username' => null, // string
+        'smtp_password' => null, // string
+
+        'from_email_address' => 'valid-user@valid-domain-name.com',
+        'from_email_address_display_name' => 'Display Name',
+        /////////////////////////
+        // End SMTP Settings
+        /////////////////////////
         
         ////////////////////////////////////////////////////
         // End of Your App's Environment Specific Settings

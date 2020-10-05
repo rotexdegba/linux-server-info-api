@@ -205,6 +205,10 @@ $container['common_data_for_views_and_templates'] = function ($c) {
     $data['__last_flash_message_css_class'] = 
         $controller_sess_segment->getFlash(\Lsia\Controllers\AppBase::FLASH_MESSAGE_CSS_CLASS_KEY, null);
     
+    $data['__smtp_credentials_missing'] = is_null($c['swift_mailer']);
+    $data['__smtp_credentials_missing_message'] = 
+        'You must configure SMTP settings in <strong>./config/app-settings.php</strong> in order for this application to be able to send emails';
+    
     return $data;
 };
 
@@ -452,3 +456,36 @@ $container['md_2_html_converter'] = function ($c) {
     
     return new \League\CommonMark\GithubFlavoredMarkdownConverter();
 };
+
+$container['swift_mailer'] = $container->factory(function ($c) {
+    
+    $mailer = null;
+
+    if(
+        is_string($c->get('settings')['smtp_server'])
+        && is_int($c->get('settings')['smtp_port'])
+        && is_string($c->get('settings')['smtp_username'])
+        && is_string($c->get('settings')['smtp_password'])
+    ) {
+        // Create the Transport
+        $transport = (
+                new Swift_SmtpTransport(
+                        $c->get('settings')['smtp_server'], 
+                        $c->get('settings')['smtp_port']
+                    )
+            )
+            ->setUsername($c->get('settings')['smtp_username'])
+            ->setPassword($c->get('settings')['smtp_password'])
+        ;
+
+        // Create the Mailer using your created Transport
+        $mailer = new Swift_Mailer($transport);
+    }
+    
+    return $mailer;
+});
+
+$container['swift_mail_message'] = $container->factory(function ($c) {
+     
+    return new Swift_Message();
+});

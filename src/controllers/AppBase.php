@@ -245,7 +245,52 @@ class AppBase extends \Slim3MvcTools\Controllers\BaseController
         return $this->response->withStatus($status_code)
                               ->withHeader('Location', $rdr_path);
     }
+    
+    protected function canSendMail(): bool {
+        
+        return $this->container->get('swift_mailer') instanceof \Swift_Mailer;
+    }
 
+    protected function sendMail(string $subject, array $toAddrs, string $message) {
+        
+        $sent = false;
+        
+        if($this->canSendMail()) {
+            
+            /** @var \Swift_Mailer $mailer */
+            $mailer = $this->container->get('swift_mailer');
+            
+            /** @var \Swift_Message $mailMessage */
+            $mailMessage = $this->container->get('swift_mail_message');
+            
+            $mailMessage->setSubject($subject)
+                        ->setFrom(
+                            [
+                                $this->container->get('settings')['from_email_address']
+                                    => $this->container->get('settings')['from_email_address_display_name']
+                            ]
+                        )
+                        ->setTo($toAddrs)
+                        ->setBody(
+                            $this->renderView(
+                                'email-template.php',
+                                [
+                                    'subject' => $subject,
+                                    'message' => $message,
+                                ]
+                            ), 
+                            'text/html'
+                        );
+            
+            // for clients that don't support html
+            $mailMessage->addPart(strip_tags($message), 'text/plain');
+            
+            $sent = $mailer->send($mailMessage);
+        }
+        
+        return $sent;
+    }
+    
     protected function setErrorFlashMessage($msg, $for_curent_request_only=false) {
         
         $msg_array = ['message'=>$msg, 'title'=>'<i class="material-icons medium">error</i>'];

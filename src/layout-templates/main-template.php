@@ -142,6 +142,32 @@
                         <?php endif; // if( isset($__last_flash_message) && $__last_flash_message !== null ): ?>
 
                     </div>
+                    <div class="container">
+                        
+                        <?php if($__smtp_credentials_missing): ?>
+
+                            <!-- Header Alert Messaging region - only show if the message variable is not empty -->
+                            <div class="card-panel rounded white-text blue darken-3">
+
+                                <div class="row">
+
+                                    <div class="col s1">
+                                        <h1 class="d-inline">
+                                            <i class="material-icons medium">info</i>
+                                        </h1>
+                                    </div>
+                                    <div class="col s11">
+                                        <p class="d-inline">
+                                            <?= $__smtp_credentials_missing_message ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        <?php endif; // if( isset($__last_flash_message) && $__last_flash_message !== null ): ?>
+
+                    </div>
                 </div>
 
                 <div class="container">

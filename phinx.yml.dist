@@ -1,3 +1,4 @@
+# This file has been superseded by phinx.php
 migration_base_class: \Lsia\BasePhinxDbMigration
 
 paths:

@@ -14,6 +14,10 @@
     - php -S 0.0.0.0:8888 -t public
         - on windows, open a powershell terminal in the directory this application is installed in an first run the command below before running the php dev server command above:
             * **Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process**
+    - You can login with the default accounts:
+        - admin : admin
+        - root : root
+    - You should modify the **'vespula_auth_adapter_obj'** entry in the app settings file to configure more secure authentication
 
 ## Windows
 * You need to have powershell

@@ -14,7 +14,7 @@
         "trntv/probe": "^1.0",
         "linfo/linfo": "^4.0",
         "gemorroj/ginfo": "^5.1",
-        "akrabat/ip-address-middleware": "^1.0",
+        "akrabat/ip-address-middleware": "^2.1.0",
         "league/commonmark": "^1.5",
         "swiftmailer/swiftmailer": "^6.0"
     },

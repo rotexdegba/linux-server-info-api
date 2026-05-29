@@ -170,6 +170,10 @@
                     </div>
                 </div>
 
+                <div class="hide-on-med-and-up">
+                    <br><br><br>
+                </div>
+
                 <div class="container">
                     <div class="section">
 

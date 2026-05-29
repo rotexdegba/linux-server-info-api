@@ -111,6 +111,11 @@
             <li><a href="<?= s3MVC_MakeLink("/api-docs"); ?>">API Documentation</a></li>
         </ul>
 
+
+        <div class="hide-on-med-and-up">
+            <br><br><br><br>
+        </div>
+
         <div class="row" id="main-content-div">
 
             <div class="col s12">
@@ -168,10 +173,6 @@
                         <?php endif; // if( isset($__last_flash_message) && $__last_flash_message !== null ): ?>
 
                     </div>
-                </div>
-
-                <div class="hide-on-med-and-up">
-                    <br><br><br>
                 </div>
 
                 <div class="container">

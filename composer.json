@@ -26,6 +26,11 @@
     "autoload": {
         "classmap": [ "src/", "tests/", "vendor/slim/" ]
     },
+    "config": {
+        "platform": {
+            "php": "7.4.0"
+        }
+    },
     "scripts": {
         "generate-config-files": [
             "php -r \" echo 'Copying config files'; \"",

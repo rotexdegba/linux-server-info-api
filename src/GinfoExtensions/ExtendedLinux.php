@@ -20,7 +20,10 @@ class ExtendedLinux extends \Ginfo\OS\Linux {
         $cores = (static function () use ($cpuData): int {
             $out = [];
             foreach ($cpuData as $block) {
-                $out[$block['physical id']] = $block['cpu cores'];
+//s3MVC_DumpVar($block);
+                if(isset($block['physical id'])) {
+                    $out[$block['physical id']] = $block['cpu cores'];
+                }
             }
 
             return \array_sum($out);
@@ -31,10 +34,12 @@ class ExtendedLinux extends \Ginfo\OS\Linux {
             ->setPhysical((static function () use ($cpuData): int {
                 $out = [];
                 foreach ($cpuData as $block) {
-                    if (isset($out[$block['physical id']])) {
-                        ++$out[$block['physical id']];
-                    } else {
-                        $out[$block['physical id']] = 1;
+                    if(isset($block['physical id'])) {
+                        if (isset($out[$block['physical id']])) {
+                            ++$out[$block['physical id']];
+                        } else {
+                            $out[$block['physical id']] = 1;
+                        }
                     }
                 }
 
@@ -46,25 +51,28 @@ class ExtendedLinux extends \Ginfo\OS\Linux {
             ->setProcessors((static function () use ($cpuData): array {
                 $out = [];
                 foreach ($cpuData as $block) {
-                    // overwrite data for physical processors
-                    //$out[$block['physical id']] = (new Processor())
-                    $out[$block['core id']] = (new \ExtendedCpuProcessor())
-                        ->setAllProcessorInfo($block)
-                        ->setModel($block['model name'])
-                        ->setSpeed($block['cpu MHz'])
-                        ->setL2Cache((float) $block['cache size'] * 1024) // L2 cache, drop KB
-                        ->setFlags(\explode(' ', $block['flags']));
+//s3MVC_DumpVar($block);
+                    if(isset($block['core id'])) {
+                        // overwrite data for physical processors
+                        //$out[$block['physical id']] = (new Processor())
+                        $out[$block['core id']] = (new \ExtendedCpuProcessor())
+                            ->setAllProcessorInfo($block)
+                            ->setModel($block['model name'])
+                            ->setSpeed($block['cpu MHz'])
+                            ->setL2Cache((float) $block['cache size'] * 1024) // L2 cache, drop KB
+                            ->setFlags(\explode(' ', $block['flags']));
 
-                    // todo: mips, arm
-                    $out[$block['core id']]->setArchitecture('x86'); // default x86
-                    foreach ($out[$block['core id']]->getFlags() as $flag) {
-                        if ('lm' === $flag || '_lm' === \mb_substr($flag, -3)) { // lm, lahf_lm
-                            $out[$block['core id']]->setArchitecture('x64');
-                            break;
-                        }
-                        if ('ia64' === $flag) {
-                            $out[$block['core id']]->setArchitecture('ia64');
-                            break;
+                        // todo: mips, arm
+                        $out[$block['core id']]->setArchitecture('x86'); // default x86
+                        foreach ($out[$block['core id']]->getFlags() as $flag) {
+                            if ('lm' === $flag || '_lm' === \mb_substr($flag, -3)) { // lm, lahf_lm
+                                $out[$block['core id']]->setArchitecture('x64');
+                                break;
+                            }
+                            if ('ia64' === $flag) {
+                                $out[$block['core id']]->setArchitecture('ia64');
+                                break;
+                            }
                         }
                     }
                 }

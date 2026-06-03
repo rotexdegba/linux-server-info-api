@@ -191,7 +191,7 @@
             
         </div>
 
-        <footer class="page-footer orange">
+        <footer class="page-footer  orange accent-4">
             
             <div class="container">
                 <div class="row">
@@ -225,7 +225,7 @@
                 </div>
             </div>
             
-            <div class="footer-copyright orange accent-4" style="padding-bottom: 0;">
+            <div class="footer-copyright" style="padding-bottom: 0;">
                 <div class="container">
 
                     <div class="row">
